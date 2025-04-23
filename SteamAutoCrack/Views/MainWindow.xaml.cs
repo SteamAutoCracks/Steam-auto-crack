@@ -51,11 +51,28 @@ public partial class MainWindow
     }
 
     private UIState _currentUIState = UIState.Idle;
+    private class UIStates
+    {
+        public bool _init { get; set; } = false; // Indicate if the UI state is initialized or not
+        public bool GenerateEMUGameInfo { get; set; } = true;
+        public bool GenerateEMUConfig { get; set; } = true;
+        public bool Unpack { get; set; } = true;
+        public bool ApplyEMU { get; set; } = true;
+        public bool GenerateCrackOnly { get; set; } = false;
+    }
+    private UIStates _prevuiStates = new()
+    {
+        GenerateEMUGameInfo = true,
+        GenerateEMUConfig = true,
+        Unpack = true,
+        ApplyEMU = true,
+        GenerateCrackOnly = false
+    };
 
     /// <summary>
     /// UI State Machine
     /// </summary>
-    private void UpdateUIState(UIState newState)
+    private void UpdateUIState(UIState newState, bool set_restore = false)
     {
         _currentUIState = newState;
         Dispatcher.Invoke(() =>
@@ -72,17 +89,38 @@ public partial class MainWindow
                     ApplyEMUGrid.IsEnabled = true;
                     GenerateCrackOnlyGrid.IsEnabled = true;
                     // Allow other areas when not enabled restore
-                    viewModel.GenerateEMUGameInfo = !viewModel.Restore;
-                    viewModel.GenerateEMUConfig = !viewModel.Restore;
-                    viewModel.Unpack = !viewModel.Restore;
-                    viewModel.ApplyEMU = !viewModel.Restore;
-                    viewModel.GenerateCrackOnly = !viewModel.Restore;
+                    if (set_restore && _prevuiStates._init)
+                    {
+                        if (viewModel.Restore)
+                        {
+                            _prevuiStates.GenerateEMUGameInfo = viewModel.GenerateEMUGameInfo;
+                            _prevuiStates.GenerateEMUConfig = viewModel.GenerateEMUConfig;
+                            _prevuiStates.Unpack = viewModel.Unpack;
+                            _prevuiStates.ApplyEMU = viewModel.ApplyEMU;
+                            _prevuiStates.GenerateCrackOnly = viewModel.GenerateCrackOnly;
+
+                            viewModel.GenerateEMUGameInfo = false;
+                            viewModel.GenerateEMUConfig = false;
+                            viewModel.Unpack = false;
+                            viewModel.ApplyEMU = false;
+                            viewModel.GenerateCrackOnly = false;
+                        }
+                        else
+                        {
+                            viewModel.GenerateEMUGameInfo = _prevuiStates.GenerateEMUGameInfo;
+                            viewModel.GenerateEMUConfig = _prevuiStates.GenerateEMUConfig;
+                            viewModel.Unpack = _prevuiStates.Unpack;
+                            viewModel.ApplyEMU = _prevuiStates.ApplyEMU;
+                            viewModel.GenerateCrackOnly = _prevuiStates.GenerateCrackOnly;
+                        }
+
+                    }
+                    _prevuiStates._init = true;
                     GenerateEMUGameInfo.IsEnabled = !viewModel.Restore;
                     GenerateEMUConfig.IsEnabled = !viewModel.Restore;
                     Unpack.IsEnabled = !viewModel.Restore;
                     ApplyEMU.IsEnabled = !viewModel.Restore;
                     GenerateCrackOnly.IsEnabled = !viewModel.Restore;
-                
                     Restore.IsEnabled = true;
                     InputPath.IsEnabled = true;
                     Select.IsEnabled = true;
@@ -568,12 +606,12 @@ public partial class MainWindow
 
     private void Restore_Checked(object sender, RoutedEventArgs e)
     {
-        UpdateUIState(UIState.Idle);
+        UpdateUIState(UIState.Idle, true);
     }
 
     private void Restore_Unchecked(object sender, RoutedEventArgs e)
     {
-        UpdateUIState(UIState.Idle);
+        UpdateUIState(UIState.Idle, true);
     }
 
     #endregion

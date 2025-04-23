@@ -7,7 +7,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Platforms>x86</Platforms>
-    <Version>3.4.5.0</Version>
+    <Version>3.4.5.1</Version>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
     <ApplicationIcon>SteamAutoCrack.ico</ApplicationIcon>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
