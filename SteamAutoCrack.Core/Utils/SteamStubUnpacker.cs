@@ -376,9 +376,10 @@ public class SteamStubUnpacker : ISteamStubUnpacker
                 apidlls = apidlls.Concat(Directory
                     .GetFiles(filepath, "steam_api64.dll", SearchOption.AllDirectories)
                     .Select(p => Path.GetRelativePath(Path.GetDirectoryName(file), p))).ToArray();
-                var steamsettingsPaths = Directory.GetDirectories(filepath,"steam_settings",SearchOption.AllDirectories).Select(p => Path.GetRelativePath(Path.GetDirectoryName(file), p)).ToArray();
+                var steamsettingsPaths = apidlls
+                    .Select(p => Path.Combine(Path.GetDirectoryName(p),"steam_settings"));
                 foreach (var steamsettingsPath in steamsettingsPaths)
-                    jsonContent[Path.Combine(Path.GetDirectoryName(steamsettingsPath), "steam_settings")] = new
+                    jsonContent[steamsettingsPath] = new
                     {
                         mode = "file_hide"
                     };
