@@ -7,7 +7,7 @@
     <UseWPF>true</UseWPF>
     <ApplicationIcon>SteamAutoCrack.ico</ApplicationIcon>
     <Platforms>x86</Platforms>
-    <Version>3.4.5.2</Version>
+    <Version>3.4.5.3</Version>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
   </PropertyGroup>
 
@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Antelcat.I18N.WPF" Version="1.0.1" />
+    <PackageReference Include="Antelcat.I18N.WPF" Version="1.1.0" />
     <PackageReference Include="WPFCustomMessageBox" Version="1.0.7" />
   </ItemGroup>
 

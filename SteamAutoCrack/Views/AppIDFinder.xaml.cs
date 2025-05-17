@@ -58,8 +58,8 @@ public partial class AppIDFinder : Window
         });
     }
 
-    public event AppIDFinderClosingHandler ClosingEvent;
-    public event AppIDFinderOKHandler OKEvent;
+    public event AppIDFinderClosingHandler? ClosingEvent;
+    public event AppIDFinderOKHandler? OKEvent;
 
     protected override void OnClosing(CancelEventArgs e)
     {

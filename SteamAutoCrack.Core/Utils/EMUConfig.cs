@@ -50,7 +50,7 @@ public class EMUConfig
     /// <summary>
     ///     Set game language.
     /// </summary>
-    public Languages Language { get; set; } = EMUConfigDefault.GetDefaultLanguage();
+    public Languages Language { get; set; } = DefaultConfig.GetDefaultLanguage();
 
     /// <summary>
     ///     Set Steam ID.
@@ -138,177 +138,176 @@ public class EMUConfig
 
         CustomIP = str;
     }
-}
 
-public class EMUConfigDefault
-{
-    /// <summary>
-    ///     Set game language.
-    /// </summary>
-    public static readonly EMUConfig.Languages Language = GetDefaultLanguage();
-
-    /// <summary>
-    ///     Set Steam ID.
-    /// </summary>
-    public static readonly SteamID SteamID = 76561197960287930;
-
-    /// <summary>
-    ///     Set Steam account name.
-    /// </summary>
-    public static readonly string AccountName = "Goldberg";
-
-    /// <summary>
-    ///     Set custom emulator listen port.
-    /// </summary>
-    public static readonly ushort ListenPort = 47584;
-
-    /// <summary>
-    ///     Set Custom broadcast IP.
-    /// </summary>
-    public static readonly string CustomIP = "127.0.0.1";
-
-    /// <summary>
-    ///     Generate custom_broadcasts.txt
-    /// </summary>
-    public static readonly bool UseCustomIP = false;
-
-    /// <summary>
-    ///     Disable all the networking functionality of the Steam emulator.
-    /// </summary>
-    public static readonly bool DisableNetworking = false;
-
-    /// <summary>
-    ///     Emable Steam emulator offline mode.
-    /// </summary>
-    public static readonly bool Offline = false;
-
-    /// <summary>
-    ///     Enable Steam emulator overlay.
-    /// </summary>
-    public static readonly bool EnableOverlay = false;
-
-    public static readonly string ConfigPath = Path.Combine(Config.Config.TempPath, "steam_settings");
-
-    public static EMUConfig.Languages GetDefaultLanguage()
+    public static class DefaultConfig
     {
-        var language = EMUConfig.Languages.english;
-        var culture = CultureInfo.InstalledUICulture.Name;
-        switch (culture.Substring(0, 2))
+        /// <summary>
+        ///     Set game language.
+        /// </summary>
+        public static readonly Languages Language = GetDefaultLanguage();
+
+        /// <summary>
+        ///     Set Steam ID.
+        /// </summary>
+        public static readonly SteamID SteamID = 76561197960287930;
+
+        /// <summary>
+        ///     Set Steam account name.
+        /// </summary>
+        public static readonly string AccountName = "Goldberg";
+
+        /// <summary>
+        ///     Set custom emulator listen port.
+        /// </summary>
+        public static readonly ushort ListenPort = 47584;
+
+        /// <summary>
+        ///     Set Custom broadcast IP.
+        /// </summary>
+        public static readonly string CustomIP = "127.0.0.1";
+
+        /// <summary>
+        ///     Generate custom_broadcasts.txt
+        /// </summary>
+        public static readonly bool UseCustomIP = false;
+
+        /// <summary>
+        ///     Disable all the networking functionality of the Steam emulator.
+        /// </summary>
+        public static readonly bool DisableNetworking = false;
+
+        /// <summary>
+        ///     Emable Steam emulator offline mode.
+        /// </summary>
+        public static readonly bool Offline = false;
+
+        /// <summary>
+        ///     Enable Steam emulator overlay.
+        /// </summary>
+        public static readonly bool EnableOverlay = false;
+
+        public static readonly string ConfigPath = Path.Combine(Config.Config.TempPath, "steam_settings");
+
+        public static Languages GetDefaultLanguage()
         {
-            case "ar":
-                language = EMUConfig.Languages.arabic;
-                break;
-            case "bg":
-                language = EMUConfig.Languages.bulgarian;
-                break;
-            case "zh":
-                switch (culture)
-                {
-                    case "zh-Hans":
-                    case "zh":
-                    case "zh-CN":
-                    case "zh-SG":
-                        language = EMUConfig.Languages.schinese;
-                        break;
-                    case "zh-Hant":
-                    case "zh-HK":
-                    case "zh-MO":
-                    case "zh-TW":
-                        language = EMUConfig.Languages.tchinese;
-                        break;
-                    default:
-                        language = EMUConfig.Languages.schinese;
-                        break;
-                }
+            var language = Languages.english;
+            var culture = CultureInfo.InstalledUICulture.Name;
+            switch (culture.Substring(0, 2))
+            {
+                case "ar":
+                    language = Languages.arabic;
+                    break;
+                case "bg":
+                    language = Languages.bulgarian;
+                    break;
+                case "zh":
+                    switch (culture)
+                    {
+                        case "zh-Hans":
+                        case "zh":
+                        case "zh-CN":
+                        case "zh-SG":
+                            language = Languages.schinese;
+                            break;
+                        case "zh-Hant":
+                        case "zh-HK":
+                        case "zh-MO":
+                        case "zh-TW":
+                            language = Languages.tchinese;
+                            break;
+                        default:
+                            language = Languages.schinese;
+                            break;
+                    }
+                    break;
+                case "cz":
+                    language = Languages.czech;
+                    break;
+                case "da":
+                    language = Languages.danish;
+                    break;
+                case "nl":
+                    language = Languages.dutch;
+                    break;
+                case "en":
+                    language = Languages.english;
+                    break;
+                case "fi":
+                    language = Languages.finnish;
+                    break;
+                case "fr":
+                    language = Languages.french;
+                    break;
+                case "de":
+                    language = Languages.dutch;
+                    break;
+                case "el":
+                    language = Languages.greek;
+                    break;
+                case "hu":
+                    language = Languages.hungarian;
+                    break;
+                case "it":
+                    language = Languages.italian;
+                    break;
+                case "ja":
+                    language = Languages.japanese;
+                    break;
+                case "ko":
+                    language = Languages.koreana;
+                    break;
+                case "no":  
+                    language = Languages.norwegian;
+                    break;
+                case "nb":
+                    language = Languages.norwegian;
+                    break;
+                case "nn":
+                    language = Languages.norwegian;
+                    break;
+                case "pl":
+                    language = Languages.polish;
+                    break;
+                case "pt":
+                    language = Languages.portuguese;
+                    break;
+                case "ro":
+                    language = Languages.romanian;
+                    break;
+                case "ru":
+                    language = Languages.russian;
+                    break;
+                case "es":
+                    language = Languages.spanish;
+                    break;
+                case "sv":
+                    language = Languages.swedish;
+                    break;
+                case "th":
+                    language = Languages.thai;
+                    break;
+                case "tr":
+                    language = Languages.turkish;
+                    break;
+                case "uk":
+                    language = Languages.ukrainian;
+                    break;
+                case "vi":
+                    language = Languages.vietnamese;
+                    break;
+                default:
+                    language = Languages.english;
+                    break;
+            }
 
-                break;
-            case "cz":
-                language = EMUConfig.Languages.czech;
-                break;
-            case "da":
-                language = EMUConfig.Languages.danish;
-                break;
-            case "nl":
-                language = EMUConfig.Languages.dutch;
-                break;
-            case "en":
-                language = EMUConfig.Languages.english;
-                break;
-            case "fi":
-                language = EMUConfig.Languages.finnish;
-                break;
-            case "fr":
-                language = EMUConfig.Languages.french;
-                break;
-            case "de":
-                language = EMUConfig.Languages.dutch;
-                break;
-            case "el":
-                language = EMUConfig.Languages.greek;
-                break;
-            case "hu":
-                language = EMUConfig.Languages.hungarian;
-                break;
-            case "it":
-                language = EMUConfig.Languages.italian;
-                break;
-            case "ja":
-                language = EMUConfig.Languages.japanese;
-                break;
-            case "ko":
-                language = EMUConfig.Languages.koreana;
-                break;
-            case "no":
-                language = EMUConfig.Languages.norwegian;
-                break;
-            case "nb":
-                language = EMUConfig.Languages.norwegian;
-                break;
-            case "nn":
-                language = EMUConfig.Languages.norwegian;
-                break;
-            case "pl":
-                language = EMUConfig.Languages.polish;
-                break;
-            case "pt":
-                language = EMUConfig.Languages.portuguese;
-                break;
-            case "ro":
-                language = EMUConfig.Languages.romanian;
-                break;
-            case "ru":
-                language = EMUConfig.Languages.russian;
-                break;
-            case "es":
-                language = EMUConfig.Languages.spanish;
-                break;
-            case "sv":
-                language = EMUConfig.Languages.swedish;
-                break;
-            case "th":
-                language = EMUConfig.Languages.thai;
-                break;
-            case "tr":
-                language = EMUConfig.Languages.turkish;
-                break;
-            case "uk":
-                language = EMUConfig.Languages.ukrainian;
-                break;
-            case "vi":
-                language = EMUConfig.Languages.vietnamese;
-                break;
-            default:
-                language = EMUConfig.Languages.english;
-                break;
+            return language;
         }
-
-        return language;
     }
 }
 
 public interface IEMUConfigGenerator
 {
-    public Task<bool> Generate(EMUConfig EMUConfig);
+    public bool Generate(EMUConfig EMUConfig);
 }
 
 public class EMUConfigGenerator : IEMUConfigGenerator
@@ -321,7 +320,7 @@ public class EMUConfigGenerator : IEMUConfigGenerator
         Ini.Config.AllowHashForComments(true);
     }
 
-    public async Task<bool> Generate(EMUConfig EMUConfig)
+    public bool Generate(EMUConfig EMUConfig)
     {
         try
         {
@@ -349,7 +348,7 @@ public class EMUConfigGenerator : IEMUConfigGenerator
 
             configsuser.Add(new Section("user::general")
             {
-                new("account_name", EMUConfig.AccountName == "" ? EMUConfigDefault.AccountName : EMUConfig.AccountName,
+                new("account_name", EMUConfig.AccountName == "" ? EMUConfig.DefaultConfig.AccountName : EMUConfig.AccountName,
                     " user account name", " default=gse orca"),
                 new("account_steamid", EMUConfig.SteamID.ConvertToUInt64().ToString(),
                     " your account ID in Steam64 format",

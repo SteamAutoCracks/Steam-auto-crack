@@ -232,7 +232,7 @@ public partial class MainWindow
 
     #region SteamStubUnpacker
 
-    private void SteamAPICheckBypassMode_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    private void SteamAPICheckBypassMode_SelectionChanged(object? sender, SelectionChangedEventArgs? e)
     {
         if (SteamAPICheckBypassNthTime == null)
             return;

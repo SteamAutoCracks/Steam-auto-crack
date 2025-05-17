@@ -28,7 +28,7 @@ public partial class About : Window
         _log.Information("Gitlab: https://gitlab.com/oureveryday/Steam-auto-crack");
     }
 
-    public event AboutClosingHandler ClosingEvent;
+    public event AboutClosingHandler? ClosingEvent;
 
     protected override void OnClosing(CancelEventArgs e)
     {

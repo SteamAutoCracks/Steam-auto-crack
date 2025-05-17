@@ -46,49 +46,49 @@ public class EMUApplyConfig
     ///     Force generate file steam_interfaces.txt (Ignore file sign date)
     /// </summary>
     public bool ForceGenerateInterfacesFiles { get; set; } = false;
-}
 
-public class EMUApplyConfigDefault
-{
-    /// <summary>
-    ///     Steam emulator config path.
-    /// </summary>
-    public static readonly string ConfigPath = Path.Combine(Config.Config.TempPath, "steam_settings");
+    public static class DefaultConfig
+    {
+        /// <summary>
+        ///     Steam emulator config path.
+        /// </summary>
+        public static readonly string ConfigPath = Path.Combine(Config.Config.TempPath, "steam_settings");
 
-    /// <summary>
-    ///     Path to apply steam emulator.
-    /// </summary>
-    public static readonly string ApplyPath = string.Empty;
+        /// <summary>
+        ///     Path to apply steam emulator.
+        /// </summary>
+        public static readonly string ApplyPath = string.Empty;
 
-    /// <summary>
-    ///     Path of steam emulator files.
-    /// </summary>
-    public static readonly string GoldbergPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Goldberg");
+        /// <summary>
+        ///     Path of steam emulator files.
+        /// </summary>
+        public static readonly string GoldbergPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Goldberg");
 
-    /// <summary>
-    ///     Emulator save location.
-    /// </summary>
-    public static readonly string LocalSave = Path.Combine("steam_settings", "saves");
+        /// <summary>
+        ///     Emulator save location.
+        /// </summary>
+        public static readonly string LocalSave = Path.Combine("steam_settings", "saves");
 
-    /// <summary>
-    ///     Enable change default emulator save location.
-    /// </summary>
-    public static readonly bool UseLocalSave = false;
+        /// <summary>
+        ///     Enable change default emulator save location.
+        /// </summary>
+        public static readonly bool UseLocalSave = false;
 
-    /// <summary>
-    ///     Use Experimental version of goldberg emulator.
-    /// </summary>
-    public static readonly bool UseGoldbergExperimental = false;
+        /// <summary>
+        ///     Use Experimental version of goldberg emulator.
+        /// </summary>
+        public static readonly bool UseGoldbergExperimental = false;
 
-    /// <summary>
-    ///     Detect file sign date and generate steam_interfaces.txt
-    /// </summary>
-    public static readonly bool GenerateInterfacesFile = false;
+        /// <summary>
+        ///     Detect file sign date and generate steam_interfaces.txt
+        /// </summary>
+        public static readonly bool GenerateInterfacesFile = false;
 
-    /// <summary>
-    ///     Force generate file steam_interfaces.txt (Ignore file sign date)
-    /// </summary>
-    public static readonly bool ForceGenerateInterfacesFiles = false;
+        /// <summary>
+        ///     Force generate file steam_interfaces.txt (Ignore file sign date)
+        /// </summary>
+        public static readonly bool ForceGenerateInterfacesFiles = false;
+    }
 }
 
 public interface IEMUApply
@@ -227,7 +227,7 @@ public class EMUApply : IEMUApply
                     filePath);
             else
                 File.Copy(Path.Combine(emuApplyConfig.GoldbergPath, "x64", "steam_api64.dll"), filePath);
-            if (Directory.Exists(Path.Combine(Path.GetDirectoryName(filePath), "steam_settings")))
+            if (Directory.Exists(Path.Combine(Path.GetDirectoryName(filePath) ?? String.Empty, "steam_settings")))
             {
                 _log.Debug("steam_settings folder already exists, skipping copy steam_settings folder...");
                 _log.Information("Steam emulator \"{filePath}\" applied.", filePath);
@@ -235,14 +235,14 @@ public class EMUApply : IEMUApply
             }
 
             CopyDirectory(new DirectoryInfo(emuApplyConfig.ConfigPath),
-                new DirectoryInfo(Path.Combine(Path.GetDirectoryName(filePath), "steam_settings")));
+                new DirectoryInfo(Path.Combine(Path.GetDirectoryName(filePath) ?? String.Empty, "steam_settings")));
             if (emuApplyConfig.GenerateInterfacesFile)
                 await GenerateInterfacesFile(Path.ChangeExtension(filePath, ".dll.bak"),
                     emuApplyConfig.ForceGenerateInterfacesFiles).ConfigureAwait(false);
             if (emuApplyConfig.UseLocalSave)
             {
                 var configsuser =
-                    new Ini(Path.Combine(Path.GetDirectoryName(filePath), "steam_settings", "configs.user.ini"));
+                    new Ini(Path.Combine(Path.GetDirectoryName(filePath) ?? String.Empty, "steam_settings", "configs.user.ini"));
 
                 configsuser.Add(new Section("user::saves", "")
                 {
@@ -253,7 +253,7 @@ public class EMUApply : IEMUApply
                         " when this option is used, the global settings folder is completely ignored, allowing a full portable behavior")
                 });
 
-                configsuser.SaveTo(Path.Combine(Path.GetDirectoryName(filePath), "steam_settings", "configs.user.ini"));
+                configsuser.SaveTo(Path.Combine(Path.GetDirectoryName(filePath) ?? String.Empty, "steam_settings", "configs.user.ini"));
 
                 _log.Debug("Saved local_save config to configs.user.ini");
             }
@@ -281,7 +281,7 @@ public class EMUApply : IEMUApply
                 File.Copy(Path.Combine(emuApplyConfig.GoldbergPath, "experimental", "x32", "steam_api.dll"), filePath);
             else
                 File.Copy(Path.Combine(emuApplyConfig.GoldbergPath, "x32", "steam_api.dll"), filePath);
-            if (Directory.Exists(Path.Combine(Path.GetDirectoryName(filePath), "steam_settings")))
+            if (Directory.Exists(Path.Combine(Path.GetDirectoryName(filePath) ?? String.Empty, "steam_settings")))
             {
                 _log.Debug("steam_settings folder already exists, skipping copy steam_settings folder...");
                 _log.Information("Steam emulator \"{filePath}\" applied.", filePath);
@@ -289,14 +289,14 @@ public class EMUApply : IEMUApply
             }
 
             CopyDirectory(new DirectoryInfo(emuApplyConfig.ConfigPath),
-                new DirectoryInfo(Path.Combine(Path.GetDirectoryName(filePath), "steam_settings")));
+                new DirectoryInfo(Path.Combine(Path.GetDirectoryName(filePath) ?? String.Empty, "steam_settings")));
             if (emuApplyConfig.GenerateInterfacesFile)
                 await GenerateInterfacesFile(Path.ChangeExtension(filePath, ".dll.bak"),
                     emuApplyConfig.ForceGenerateInterfacesFiles).ConfigureAwait(false);
             if (emuApplyConfig.UseLocalSave)
             {
                 var configsuser =
-                    new Ini(Path.Combine(Path.GetDirectoryName(filePath), "steam_settings", "configs.user.ini"));
+                    new Ini(Path.Combine(Path.GetDirectoryName(filePath) ?? String.Empty, "steam_settings", "configs.user.ini"));
 
                 configsuser.Add(new Section("user::saves", "")
                 {
@@ -307,7 +307,7 @@ public class EMUApply : IEMUApply
                         " when this option is used, the global settings folder is completely ignored, allowing a full portable behavior")
                 });
 
-                configsuser.SaveTo(Path.Combine(Path.GetDirectoryName(filePath), "steam_settings", "configs.user.ini"));
+                configsuser.SaveTo(Path.Combine(Path.GetDirectoryName(filePath) ?? String.Empty, "steam_settings", "configs.user.ini"));
 
                 _log.Debug("Saved local_save config to configs.user.ini");
             }
@@ -355,7 +355,7 @@ public class EMUApply : IEMUApply
     {
         try
         {
-            if (File.Exists(Path.Combine(Path.GetDirectoryName(filePath), "steam_settings", "steam_interfaces.txt")))
+            if (File.Exists(Path.Combine(Path.GetDirectoryName(filePath) ?? String.Empty, "steam_settings", "steam_interfaces.txt")))
                 _log.Debug("steam_interfaces.txt already exists, skipping generate interfaces.");
             _log.Debug("Generating interface file for \"{filePath}\"", filePath);
             if (!force)

@@ -16,7 +16,7 @@ internal class HttpClientFactory
             ConnectCallback = IPv4ConnectAsync
         });
 
-        var assemblyVersion = typeof(HttpClientFactory).Assembly.GetName().Version.ToString(3);
+        var assemblyVersion = typeof(HttpClientFactory).Assembly.GetName().Version?.ToString(3);
         client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("SteamAutoCrack", assemblyVersion));
 
         return client;
@@ -56,18 +56,14 @@ internal class Steam3Session
 
     private readonly CallbackManager callbacks;
 
-    // output
-    public readonly Credentials credentials;
-
     // input
-    private readonly SteamUser.LogOnDetails logonDetails;
-    private readonly SteamApps steamApps;
+    readonly SteamUser.LogOnDetails logonDetails;
+    readonly SteamApps steamApps;
 
     private readonly object steamLock = new();
     private readonly PublishedFile steamPublishedFile;
-    private readonly SteamUserStats steamUserStats;
+
     public bool bAborted;
-    public bool bConnected;
     public bool bConnecting;
     public bool bDidDisconnect;
     public bool bExpectingDisconnectRemote;
@@ -76,9 +72,7 @@ internal class Steam3Session
     private int seq; // more hack fixes
 
     public SteamClient steamClient;
-    public SteamContent steamContent;
     public SteamUser steamUser;
-
 
     public Steam3Session(SteamUser.LogOnDetails details, CancellationToken cancellationToken = default)
     {
@@ -91,11 +85,10 @@ internal class Steam3Session
         );
 
         steamClient = new SteamClient(clientConfiguration);
-        steamUser = steamClient.GetHandler<SteamUser>();
-        steamApps = steamClient.GetHandler<SteamApps>();
+        steamUser = steamClient.GetHandler<SteamUser>()!;
+        steamApps = steamClient.GetHandler<SteamApps>()!;
         var steamUnifiedMessages = steamClient.GetHandler<SteamUnifiedMessages>();
-        steamPublishedFile = steamUnifiedMessages.CreateService<PublishedFile>();
-        steamContent = steamClient.GetHandler<SteamContent>();
+        steamPublishedFile = steamUnifiedMessages!.CreateService<PublishedFile>();
 
         callbacks = new CallbackManager(steamClient);
 
@@ -137,7 +130,7 @@ internal class Steam3Session
 
         var appInfoMultiple = await steamApps.PICSGetProductInfo([request], []);
 
-        foreach (var appInfo in appInfoMultiple.Results)
+        foreach (var appInfo in appInfoMultiple.Results!)
         {
             foreach (var app_value in appInfo.Apps)
             {
@@ -147,7 +140,7 @@ internal class Steam3Session
                 AppInfo[app.ID] = app;
             }
 
-            foreach (var app in appInfo.UnknownApps) AppInfo[app] = null;
+            foreach (var app in appInfo.UnknownApps) AppInfo[app] = null!;
         }
     }
 
@@ -158,7 +151,7 @@ internal class Steam3Session
 
         var details = await steamPublishedFile.GetDetails(pubFileRequest);
 
-        if (details.Result == EResult.OK) return details.Body.publishedfiledetails.FirstOrDefault();
+        if (details.Result == EResult.OK) return details.Body.publishedfiledetails.FirstOrDefault()!;
 
         throw new Exception(
             $"EResult {(int)details.Result} ({details.Result}) while retrieving file details for pubfile {pubFile}.");

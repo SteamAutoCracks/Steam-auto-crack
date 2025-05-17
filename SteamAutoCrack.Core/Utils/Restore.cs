@@ -77,10 +77,10 @@ public class Restore : IRestore
                     try
                     {
                         _log.Debug("Restoring \"{path}\"...", pathtorestore);
-                        File.Delete(Path.Combine(Path.GetDirectoryName(pathtorestore),
+                        File.Delete(Path.Combine(Path.GetDirectoryName(pathtorestore) ?? String.Empty,
                             Path.GetFileNameWithoutExtension(pathtorestore)));
                         File.Move(pathtorestore,
-                            Path.Combine(Path.GetDirectoryName(pathtorestore),
+                            Path.Combine(Path.GetDirectoryName(pathtorestore) ?? String.Empty,
                                 Path.GetFileNameWithoutExtension(pathtorestore)));
                     }
                     catch (Exception ex)

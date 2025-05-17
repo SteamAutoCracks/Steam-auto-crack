@@ -134,7 +134,7 @@ namespace SteamAutoCrack.Core.Utils
                 _log.Error("Failed to get latest Goldberg Steam emulator version, error: " + response.StatusCode);
             }
 
-            if (downloadUrl == string.Empty) throw new Exception("Failed to get download url.");
+            if ( downloadUrl == null || downloadUrl == string.Empty) throw new Exception("Failed to get download url.");
 
             _log.Debug("Downloading URL: {downloadUrl}", downloadUrl);
             await using var fileStream = File.OpenWrite(Path.Combine(Config.Config.TempPath, "Goldberg.7z"));
@@ -157,14 +157,13 @@ namespace SteamAutoCrack.Core.Utils
         {
             await Task.Run(() =>
             {
-                var errorOccured = false;
                 _log.Debug("Start extraction...");
                 Directory.Delete(Config.Config.GoldbergPath, true);
                 Directory.CreateDirectory(Config.Config.GoldbergPath);
 
                 var dllPaths = AppContext.GetData("NATIVE_DLL_SEARCH_DIRECTORIES")?.ToString();
 
-                var pathsList = new List<string>(dllPaths?.Split(';'));
+                var pathsList = new List<string>(dllPaths?.Split(';') ?? Array.Empty<string>());
                 var dllPath = "";
 
                 foreach (var path in pathsList)
@@ -194,7 +193,6 @@ namespace SteamAutoCrack.Core.Utils
                     }
                     catch (Exception ex)
                     {
-                        errorOccured = true;
                         _log.Error(ex, "Error while trying to extract.");
                     }
                 }

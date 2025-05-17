@@ -34,7 +34,7 @@ public class AppList
 
 public class SteamAppsV2
 {
-    [JsonPropertyName("applist")] public AppList AppList { get; set; }
+    [JsonPropertyName("applist")] public AppList? AppList { get; set; }
 }
 
 public class SteamAppList
@@ -43,7 +43,7 @@ public class SteamAppList
 
     private static readonly string steamapplisturl = "https://api.steampowered.com/ISteamApps/GetAppList/v2/";
 
-    private static ILogger _log;
+    private static readonly ILogger _log = Log.ForContext<SteamAppList>();
 
     private static bool bInited;
 
@@ -51,14 +51,12 @@ public class SteamAppList
 
     private static readonly string Database = Path.Combine(Config.Config.TempPath, "SteamAppList.db");
 
-    public static SQLiteAsyncConnection db;
+    public static SQLiteAsyncConnection? db;
 
     private static TaskCompletionSource<bool> _initializationTcs = new();
 
     public static async Task Initialize(bool forceupdate = false)
     {
-        _log = Log.ForContext<SteamAppList>();
-
         try
         {
             bDisposed = true;
@@ -162,7 +160,7 @@ public class SteamAppList
 
     public static async Task<IEnumerable<SteamApp>> GetListOfAppsByName(string name)
     {
-        var query = await db.Table<SteamApp>().ToListAsync().ConfigureAwait(false);
+        var query = await db!.Table<SteamApp>().ToListAsync().ConfigureAwait(false);
         var SearchOfAppsByName = query.Search(x => x.Name)
             .SetCulture(StringComparison.OrdinalIgnoreCase)
             .ContainingAll(name.Split(' '));
@@ -180,7 +178,7 @@ public class SteamAppList
 
     public static async Task<IEnumerable<SteamApp>> GetListOfAppsByNameFuzzy(string name)
     {
-        var query = await db.Table<SteamApp>().ToListAsync().ConfigureAwait(false);
+        var query = await db!.Table<SteamApp>().ToListAsync().ConfigureAwait(false);
         var listOfAppsByName = new List<SteamApp>();
         var results = Process.ExtractTop(new SteamApp { Name = name }, query, x => x.Name?.ToLower(),
             ScorerCache.Get<WeightedRatioScorer>(), FuzzySearchScore);
@@ -200,18 +198,18 @@ public class SteamAppList
     public static async Task<SteamApp> GetAppByName(string name)
     {
         _log?.Debug($"Trying to get app name for app: {name}");
-        var app = await db.Table<SteamApp>()
+        var app = await db!.Table<SteamApp>()
             .FirstOrDefaultAsync(x => x.Name != null && x.Name.Equals(name))
             .ConfigureAwait(false);
         if (app != null) _log?.Debug($"Successfully got app name for app: {app}");
-        return app;
+        return app!;
     }
 
     public static async Task<SteamApp> GetAppById(uint appid)
     {
         _log?.Debug($"Trying to get app with ID {appid}");
-        var app = await db.Table<SteamApp>().FirstOrDefaultAsync(x => x.AppId.Equals(appid)).ConfigureAwait(false);
+        var app = await db!.Table<SteamApp>().FirstOrDefaultAsync(x => x.AppId.Equals(appid)).ConfigureAwait(false);
         if (app != null) _log?.Debug($"Successfully got app {app}");
-        return app;
+        return app!;
     }
 }

@@ -22,7 +22,7 @@ public class ListViewSink : ILogEventSink
     {
         var level = "";
         var SourceContextStr = "";
-        LogEventPropertyValue SourceContext = null;
+        LogEventPropertyValue SourceContext;
         var logColor = Brushes.White;
         switch (logEvent.Level)
         {
@@ -43,7 +43,7 @@ public class ListViewSink : ILogEventSink
                 break;
         }
 
-        logEvent.Properties.TryGetValue("SourceContext", out SourceContext);
+        logEvent.Properties.TryGetValue("SourceContext", out SourceContext!);
         SourceContextStr = SourceContext?.ToString();
         SourceContextStr = SourceContextStr?.Substring(SourceContextStr.LastIndexOf('.') + 1).Replace("\"", "")
             .Replace("\\", "");

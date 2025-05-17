@@ -67,51 +67,49 @@ public class SteamStubUnpackerConfig
     ///     SteamAPI Check Bypass Nth Time Setting
     /// </summary>
     public List<UInt64> SteamAPICheckBypassNthTime { get; set; } = new() {1};
-}
 
-public class SteamStubUnpackerConfigDefault
-{
-    /// <summary>
-    ///     Keeps the .bind section in the unpacked file.
-    /// </summary>
-    public static readonly bool KeepBind = true;
+    public static class DefaultConfig
+    {
+        /// <summary>
+        ///     Keeps the .bind section in the unpacked file.
+        /// </summary>
+        public static readonly bool KeepBind = true;
 
-    /// <summary>
-    ///     Keeps the DOS stub in the unpacked file.
-    /// </summary>
-    public static readonly bool KeepStub = false;
+        /// <summary>
+        ///     Keeps the DOS stub in the unpacked file.
+        /// </summary>
+        public static readonly bool KeepStub = false;
 
-    /// <summary>
-    ///     Realigns the unpacked file sections.
-    /// </summary>
-    public static readonly bool Realign = false;
+        /// <summary>
+        ///     Realigns the unpacked file sections.
+        /// </summary>
+        public static readonly bool Realign = false;
 
-    /// <summary>
-    ///     Recalculates the unpacked file checksum.
-    /// </summary>
-    public static readonly bool ReCalcChecksum = false;
+        /// <summary>
+        ///     Recalculates the unpacked file checksum.
+        /// </summary>
+        public static readonly bool ReCalcChecksum = false;
 
-    /// <summary>
-    ///     Use Experimental Features.
-    /// </summary>
-    public static readonly bool UseExperimentalFeatures = false;
+        /// <summary>
+        ///     Use Experimental Features.
+        /// </summary>
+        public static readonly bool UseExperimentalFeatures = false;
 
-    /// <summary>
-    ///     SteamAPICheckBypass Mode
-    /// </summary>
-    public static readonly SteamStubUnpackerConfig.SteamAPICheckBypassModes SteamAPICheckBypassMode =
-        SteamStubUnpackerConfig.SteamAPICheckBypassModes.Disabled;
+        /// <summary>
+        ///     SteamAPICheckBypass Mode
+        /// </summary>
+        public static readonly SteamAPICheckBypassModes SteamAPICheckBypassMode = SteamAPICheckBypassModes.Disabled;
 
-    /// <summary>
-    ///     DLL hijacking name for SteamAPICheckBypass
-    /// </summary>
-    public static readonly SteamStubUnpackerConfig.SteamAPICheckBypassDLLs SteamAPICheckBypassDLL =
-        SteamStubUnpackerConfig.SteamAPICheckBypassDLLs.WINMM_DLL;
+        /// <summary>
+        ///     DLL hijacking name for SteamAPICheckBypass
+        /// </summary>
+        public static readonly SteamAPICheckBypassDLLs SteamAPICheckBypassDLL = SteamAPICheckBypassDLLs.WINMM_DLL;
 
-    /// <summary>
-    ///     SteamAPI Check Bypass Nth Time Setting
-    /// </summary>
-    public static readonly List<UInt64> SteamAPICheckBypassNthTime = new() {1};
+        /// <summary>
+        ///     SteamAPI Check Bypass Nth Time Setting
+        /// </summary>
+        public static readonly List<UInt64> SteamAPICheckBypassNthTime = new() { 1 };
+    }
 }
 
 public interface ISteamStubUnpacker
@@ -176,9 +174,9 @@ public class SteamStubUnpacker : ISteamStubUnpacker
             if (_SteamAPICheckBypassMode != SteamStubUnpackerConfig.SteamAPICheckBypassModes.Disabled)
             {
                 if (File.GetAttributes(path).HasFlag(FileAttributes.Directory))
-                    await ApplySteamAPICheckBypass(path, true);
+                    ApplySteamAPICheckBypass(path, true);
                 else
-                    await ApplySteamAPICheckBypass(path);
+                    ApplySteamAPICheckBypass(path);
             }
 
             return true;
@@ -282,13 +280,13 @@ public class SteamStubUnpacker : ISteamStubUnpacker
         }
     }
 
-    private async Task ApplySteamAPICheckBypass(string path, bool folder = false)
+    private void ApplySteamAPICheckBypass(string path, bool folder = false)
     {
         try
         {
             var dllPaths = AppContext.GetData("NATIVE_DLL_SEARCH_DIRECTORIES")?.ToString();
 
-            var pathsList = new List<string>(dllPaths?.Split(';'));
+            var pathsList = new List<string>(dllPaths?.Split(';') ?? Array.Empty<string>());
             var dllPath = "";
             var dll = "";
             var targetDllName = _SteamAPICheckBypassDLL switch
@@ -329,7 +327,7 @@ public class SteamStubUnpacker : ISteamStubUnpacker
             {
                 bool skipFile = false;
                 foreach (var bypassDllName in bypassDllNames)
-                    if (File.Exists(Path.Combine(Path.GetDirectoryName(file), bypassDllName)))
+                    if (File.Exists(Path.Combine(Path.GetDirectoryName(file) ?? String.Empty, bypassDllName)))
                     {
                         _log.Information("Steam API Check Bypass dll already exists, skipping...");
                         skipFile = true;
@@ -343,16 +341,16 @@ public class SteamStubUnpacker : ISteamStubUnpacker
                     dll = Path.Combine(dllPath, "SteamAPICheckBypass_x32.dll");
                 else
                     dll = Path.Combine(dllPath, "SteamAPICheckBypass.dll");
-                File.Copy(dll, Path.Combine(Path.GetDirectoryName(file), targetDllName));
+                File.Copy(dll, Path.Combine(Path.GetDirectoryName(file) ?? String.Empty, targetDllName));
                 var jsonContent = new Dictionary<string, object>();
-                if (File.Exists(Path.Combine(Path.GetDirectoryName(file), "SteamAPICheckBypass.json")))
+                if (File.Exists(Path.Combine(Path.GetDirectoryName(file) ?? String.Empty, "SteamAPICheckBypass.json")))
                 {
                     var oldjsonString =
-                        File.ReadAllText(Path.Combine(Path.GetDirectoryName(file), "SteamAPICheckBypass.json"));
+                        File.ReadAllText(Path.Combine(Path.GetDirectoryName(file) ?? String.Empty, "SteamAPICheckBypass.json"));
                     jsonContent = JsonSerializer.Deserialize<Dictionary<string, object>>(oldjsonString);
                 }
 
-                jsonContent[Path.GetFileName(file)] = new
+                jsonContent![Path.GetFileName(file)] = new
                 {
                     mode = "file_redirect",
                     to = Path.GetFileName(file) + ".bak",
@@ -367,17 +365,17 @@ public class SteamStubUnpacker : ISteamStubUnpacker
                 }
                 else
                 {
-                    filepath = Path.GetDirectoryName(file);
+                    filepath = Path.GetDirectoryName(file) ?? String.Empty;
                 }
 
                 var apidlls = Directory.GetFiles(filepath, "steam_api.dll",
                     SearchOption.AllDirectories)
-                    .Select(p => Path.GetRelativePath(Path.GetDirectoryName(file), p)).ToArray();
+                    .Select(p => Path.GetRelativePath(Path.GetDirectoryName(file) ?? String.Empty, p)).ToArray();
                 apidlls = apidlls.Concat(Directory
                     .GetFiles(filepath, "steam_api64.dll", SearchOption.AllDirectories)
-                    .Select(p => Path.GetRelativePath(Path.GetDirectoryName(file), p))).ToArray();
+                    .Select(p => Path.GetRelativePath(Path.GetDirectoryName(file) ?? String.Empty, p))).ToArray();
                 var steamsettingsPaths = apidlls
-                    .Select(p => Path.Combine(Path.GetDirectoryName(p),"steam_settings"));
+                    .Select(p => Path.Combine(Path.GetDirectoryName(p) ?? String.Empty, "steam_settings"));
                 foreach (var steamsettingsPath in steamsettingsPaths)
                     jsonContent[steamsettingsPath] = new
                     {
@@ -412,7 +410,7 @@ public class SteamStubUnpacker : ISteamStubUnpacker
 
                 var jsonString = JsonSerializer.Serialize(jsonContent,
                     new JsonSerializerOptions { WriteIndented = true });
-                File.WriteAllText(Path.Combine(Path.GetDirectoryName(file), "SteamAPICheckBypass.json"),
+                File.WriteAllText(Path.Combine(Path.GetDirectoryName(file) ?? String.Empty, "SteamAPICheckBypass.json"),
                     jsonString);
             }
 

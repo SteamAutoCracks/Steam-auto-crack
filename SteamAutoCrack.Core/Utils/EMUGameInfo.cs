@@ -69,32 +69,32 @@ public class EMUGameInfoConfig
 
         AppID = appID;
     }
-}
 
-public class EMUGameInfoConfigDefault
-{
-    public static GeneratorGameInfoAPI GameInfoAPI = GeneratorGameInfoAPI.GeneratorSteamClient;
-    public static readonly string ConfigPath = Path.Combine(Config.Config.TempPath, "steam_settings");
+    public static class DefaultConfig
+    {
+        public static GeneratorGameInfoAPI GameInfoAPI = GeneratorGameInfoAPI.GeneratorSteamClient;
+        public static readonly string ConfigPath = Path.Combine(Config.Config.TempPath, "steam_settings");
 
-    /// <summary>
-    ///     Enable generate game achievement images.
-    /// </summary>
-    public static readonly bool GenerateImages = true;
+        /// <summary>
+        ///     Enable generate game achievement images.
+        /// </summary>
+        public static readonly bool GenerateImages = true;
 
-    /// <summary>
-    ///     Use Xan105 API for generating game schema.
-    /// </summary>
-    public static readonly bool UseXan105API = false;
+        /// <summary>
+        ///     Use Xan105 API for generating game schema.
+        /// </summary>
+        public static readonly bool UseXan105API = false;
 
-    /// <summary>
-    ///     Use Steam Web App List when generating DLCs.
-    /// </summary>
-    public static readonly bool UseSteamWebAppList = false;
+        /// <summary>
+        ///     Use Steam Web App List when generating DLCs.
+        /// </summary>
+        public static readonly bool UseSteamWebAppList = false;
 
-    /// <summary>
-    ///     Required when using Steam official Web API.
-    /// </summary>
-    public static string SteamWebAPIKey { get; set; } = string.Empty;
+        /// <summary>
+        ///     Required when using Steam official Web API.
+        /// </summary>
+        public static string SteamWebAPIKey { get; set; } = string.Empty;
+    }
 }
 
 public interface IEMUGameInfo
@@ -160,7 +160,7 @@ internal abstract class Generator
     protected readonly bool UseXan105API = true;
     public Ini config_app = new();
     protected List<string> DownloadedFile = new();
-    protected JsonDocument GameSchema;
+    protected JsonDocument? GameSchema;
     private DateTime LastWebRequestTime;
 
     public Generator(EMUGameInfoConfig GameInfoConfig)
@@ -376,8 +376,8 @@ internal abstract class Generator
                                         if (t.Key != null && t.Value != null)
                                             x.Add(t.Key, t.Value.ToString());
 
-                                inventory.Add(index, x);
-                                inventorydefault.Add(index, 1);
+                                inventory.Add(index!, x);
+                                inventorydefault.Add(index!, 1);
                             }
 
                             File.WriteAllText(Path.Combine(ConfigPath, "items.json"), inventory.ToString());
@@ -478,10 +478,10 @@ internal abstract class Generator
             _log.Debug("Generating achievements...");
             var achievementList = new List<Achievement>();
             var achievementData = UseXan105API
-                ? GameSchema.RootElement.GetProperty("data")
+                ? GameSchema!.RootElement.GetProperty("data")
                     .GetProperty("achievement")
                     .GetProperty("list")
-                : GameSchema.RootElement.GetProperty("game")
+                : GameSchema!.RootElement.GetProperty("game")
                     .GetProperty("availableGameStats")
                     .GetProperty("achievements");
 
@@ -566,7 +566,7 @@ internal abstract class Generator
                 }
 
                 _log.Debug("Generating stats...");
-                var statData = GameSchema.RootElement.GetProperty("game")
+                var statData = GameSchema!.RootElement.GetProperty("game")
                     .GetProperty("availableGameStats")
                     .GetProperty("stats");
                 var Count = 0;
@@ -648,7 +648,7 @@ internal abstract class Generator
     protected class DLC
     {
         public uint DLCId { get; set; } = 0;
-        public KeyValue Info { get; set; }
+        public KeyValue? Info { get; set; }
     }
 
     public class Achievement
@@ -694,7 +694,7 @@ internal abstract class Generator
 
 internal class GeneratorSteamClient : Generator
 {
-    private static Steam3Session steam3;
+    private static Steam3Session? steam3;
 
     public GeneratorSteamClient(EMUGameInfoConfig GameInfoConfig) : base(GameInfoConfig)
     {
@@ -703,7 +703,7 @@ internal class GeneratorSteamClient : Generator
     private async Task<byte[]> DownloadPubfileAsync(ulong publishedFileId,
         CancellationToken cancellationToken = default)
     {
-        var details = await steam3.GetPublishedFileDetails(publishedFileId);
+        var details = await steam3!.GetPublishedFileDetails(publishedFileId);
 
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -784,7 +784,7 @@ internal class GeneratorSteamClient : Generator
                 _log.Error(ex, "Failed to get Steam3 App Section.");
                 throw new Exception("Failed to get Steam3 App Section.");
             }
-        });
+        }) ?? KeyValue.Invalid;
     }
 
     private async Task GenerateControllerInfo(CancellationToken cancellationToken = default)
@@ -1004,47 +1004,6 @@ internal class GeneratorSteamClient : Generator
             }
 
             return rootJobj;
-        }
-
-        bool ToBoolSafe(JsonNode? obj)
-        {
-            if (obj is null) return false;
-
-            switch (obj.GetValueKind())
-            {
-                case JsonValueKind.String:
-                {
-                    var str = obj.ToString();
-                    if (string.IsNullOrEmpty(str)) return false;
-                    return str.Equals("true", StringComparison.OrdinalIgnoreCase)
-                           || str.Equals("1", StringComparison.Ordinal);
-                }
-                case JsonValueKind.Number:
-                {
-                    if (double.TryParse(obj.ToString() ?? string.Empty, CultureInfo.InvariantCulture, out var num) &&
-                        !double.IsNaN(num))
-                    {
-                        const double ZERO_THRESHOLD = 1e-10;
-                        return Math.Abs(num) >= ZERO_THRESHOLD;
-                    }
-                }
-                    break;
-                case JsonValueKind.True: return true;
-            }
-
-            return false;
-        }
-
-        JsonArray ToArraySafe(JsonNode? obj)
-        {
-            if (obj is null) return [];
-
-            switch (obj.GetValueKind())
-            {
-                case JsonValueKind.Array: return obj.AsArray();
-            }
-
-            return [];
         }
 
         JsonObject ToObjSafe(JsonNode? obj)
@@ -1545,7 +1504,7 @@ internal class GeneratorSteamClient : Generator
 
             var supportedCons = GameInfoConfig["steamcontrollerconfigdetails"].Children.Where(
                 c => supported_controllers_types.Contains(c["controller_type"].Value)
-                     && c["enabled_branches"].Value.Split(",")
+                     && c["enabled_branches"].Value!.Split(",")
                          .Any(br => br.Equals("default", StringComparison.OrdinalIgnoreCase)));
 
             cancellationToken.ThrowIfCancellationRequested();
@@ -1554,7 +1513,7 @@ internal class GeneratorSteamClient : Generator
             foreach (var item in supported_controllers_types)
             {
                 foreach (var supportedCon in supportedCons)
-                    if (supportedCon["controller_type"].Value.Equals(item, StringComparison.OrdinalIgnoreCase))
+                    if (supportedCon["controller_type"].Value!.Equals(item, StringComparison.OrdinalIgnoreCase))
                     {
                         con = supportedCon;
                         break;
@@ -1733,7 +1692,7 @@ internal class GeneratorSteamClient : Generator
                 if (GameInfoDLCs["listofdlc"].Value != null)
                 {
                     DLCIds.AddRange(
-                        new List<string>(GameInfoDLCs["listofdlc"].Value?.Split(',')).ConvertAll(x =>
+                        new List<string>(GameInfoDLCs["listofdlc"].Value?.Split(',') ?? Array.Empty<string>()).ConvertAll(x =>
                             Convert.ToUInt32(x)));
                 }
                 else
@@ -1861,12 +1820,12 @@ internal class GeneratorSteamClient : Generator
 
     private async Task GetAppInfo(uint appID)
     {
-        await steam3.RequestAppInfo(appID, true).ConfigureAwait(false);
+        await steam3!.RequestAppInfo(appID, true).ConfigureAwait(false);
     }
 
-    private async Task<bool> WaitForConnected(CancellationToken cancellationToken = default)
+    private bool WaitForConnected(CancellationToken cancellationToken = default)
     {
-        if (steam3.IsLoggedOn || steam3.bAborted)
+        if (steam3!.IsLoggedOn || steam3.bAborted)
             return steam3.IsLoggedOn;
 
         steam3.WaitUntilCallback(() => { }, () => steam3.IsLoggedOn, cancellationToken);
@@ -1900,7 +1859,7 @@ internal class GeneratorSteamClient : Generator
                 }
             });
 
-            if (await WaitForConnected(cancellationToken).ConfigureAwait(false))
+            if (WaitForConnected(cancellationToken))
             {
                 await GetAppInfo(AppID).ConfigureAwait(false);
                 cancellationToken.ThrowIfCancellationRequested();

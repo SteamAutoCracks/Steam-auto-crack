@@ -25,29 +25,29 @@ public class GenCrackOnlyConfig
     ///     Pack Crack only file with .zip archive.
     /// </summary>
     public bool Pack { get; set; } = false;
-}
 
-public class GenCrackOnlyConfigDefault
-{
-    /// <summary>
-    ///     Game path to generate crack only files.
-    /// </summary>
-    public static readonly string SourcePath = string.Empty;
+    public static class DefaultConfig
+    {
+        /// <summary>
+        ///     Game path to generate crack only files.
+        /// </summary>
+        public static readonly string SourcePath = string.Empty;
 
-    /// <summary>
-    ///     Crack only file output path.
-    /// </summary>
-    public static readonly string OutputPath = Config.Config.TempPath;
+        /// <summary>
+        ///     Crack only file output path.
+        /// </summary>
+        public static readonly string OutputPath = Config.Config.TempPath;
 
-    /// <summary>
-    ///     Create crack only readme file.
-    /// </summary>
-    public static readonly bool CreateReadme = false;
+        /// <summary>
+        ///     Create crack only readme file.
+        /// </summary>
+        public static readonly bool CreateReadme = false;
 
-    /// <summary>
-    ///     Pack Crack only file with .zip archive.
-    /// </summary>
-    public static readonly bool Pack = false;
+        /// <summary>
+        ///     Pack Crack only file with .zip archive.
+        /// </summary>
+        public static readonly bool Pack = false;
+    }
 }
 
 public interface IGenCrackOnly
@@ -125,15 +125,15 @@ public class GenCrackOnly : IGenCrackOnly
 
                 foreach (var path in files)
                 {
-                    var origpath = Path.Combine(Path.GetDirectoryName(path), Path.GetFileNameWithoutExtension(path));
+                    var origpath = Path.Combine(Path.GetDirectoryName(path) ?? string.Empty, Path.GetFileNameWithoutExtension(path));
                     if (!Directory.Exists(Path.Combine(config.OutputPath, "Crack",
-                            Path.GetRelativePath(config.SourcePath, Path.GetDirectoryName(path)))))
+                            Path.GetRelativePath(config.SourcePath, Path.GetDirectoryName(path) ?? string.Empty))))
                         Directory.CreateDirectory(Path.Combine(config.OutputPath, "Crack",
-                            Path.GetRelativePath(config.SourcePath, Path.GetDirectoryName(path))));
+                            Path.GetRelativePath(config.SourcePath, Path.GetDirectoryName(path) ?? string.Empty)));
                     if (!Directory.Exists(Path.Combine(config.OutputPath, "Crack",
-                            Path.GetRelativePath(config.SourcePath, Path.GetDirectoryName(origpath)))))
+                            Path.GetRelativePath(config.SourcePath, Path.GetDirectoryName(origpath) ?? string.Empty))))
                         Directory.CreateDirectory(Path.Combine(config.OutputPath, "Crack",
-                            Path.GetRelativePath(config.SourcePath, Path.GetDirectoryName(path))));
+                            Path.GetRelativePath(config.SourcePath, Path.GetDirectoryName(path) ?? string.Empty)));
                     File.Copy(path,
                         Path.Combine(config.OutputPath, "Crack", Path.GetRelativePath(config.SourcePath, path)));
                     File.Copy(origpath,
@@ -149,9 +149,9 @@ public class GenCrackOnly : IGenCrackOnly
                 foreach (var path in bypassfiles)
                 {
                     if (!Directory.Exists(Path.Combine(config.OutputPath, "Crack",
-                            Path.GetRelativePath(config.SourcePath, Path.GetDirectoryName(path)))))
+                            Path.GetRelativePath(config.SourcePath, Path.GetDirectoryName(path) ?? string.Empty))))
                         Directory.CreateDirectory(Path.Combine(config.OutputPath, "Crack",
-                            Path.GetRelativePath(config.SourcePath, Path.GetDirectoryName(path))));
+                            Path.GetRelativePath(config.SourcePath, Path.GetDirectoryName(path) ?? string.Empty)));
                     File.Copy(path,
                         Path.Combine(config.OutputPath, "Crack", Path.GetRelativePath(config.SourcePath, path)));
                 }

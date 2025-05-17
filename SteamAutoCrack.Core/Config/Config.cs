@@ -279,35 +279,35 @@ public class EMUApplyConfigs
     /// <summary>
     ///     Emulator save location.
     /// </summary>
-    public string LocalSave { get; set; } = EMUApplyConfigDefault.LocalSave;
+    public string LocalSave { get; set; } = EMUApplyConfig.DefaultConfig.LocalSave;
 
     /// <summary>
     ///     Enable change default emulator save location.
     /// </summary>
-    public bool UseLocalSave { get; set; } = EMUApplyConfigDefault.UseLocalSave;
+    public bool UseLocalSave { get; set; } = EMUApplyConfig.DefaultConfig.UseLocalSave;
 
     /// <summary>
     ///     Use Experimental version of goldberg emulator.
     /// </summary>
-    public bool UseGoldbergExperimental { get; set; } = EMUApplyConfigDefault.UseGoldbergExperimental;
+    public bool UseGoldbergExperimental { get; set; } = EMUApplyConfig.DefaultConfig.UseGoldbergExperimental;
 
     /// <summary>
     ///     Detect file sign date and generate steam_interfaces.txt
     /// </summary>
-    public bool GenerateInterfacesFile { get; set; } = EMUApplyConfigDefault.GenerateInterfacesFile;
+    public bool GenerateInterfacesFile { get; set; } = EMUApplyConfig.DefaultConfig.GenerateInterfacesFile;
 
     /// <summary>
     ///     Force generate file steam_interfaces.txt (Ignore file sign date)
     /// </summary>
-    public bool ForceGenerateInterfacesFiles { get; set; } = EMUApplyConfigDefault.ForceGenerateInterfacesFiles;
+    public bool ForceGenerateInterfacesFiles { get; set; } = EMUApplyConfig.DefaultConfig.ForceGenerateInterfacesFiles;
 
     public void ResettoDefault()
     {
-        LocalSave = EMUApplyConfigDefault.LocalSave;
-        UseLocalSave = EMUApplyConfigDefault.UseLocalSave;
-        UseGoldbergExperimental = EMUApplyConfigDefault.UseGoldbergExperimental;
-        GenerateInterfacesFile = EMUApplyConfigDefault.GenerateInterfacesFile;
-        ForceGenerateInterfacesFiles = EMUApplyConfigDefault.ForceGenerateInterfacesFiles;
+        LocalSave = EMUApplyConfig.DefaultConfig.LocalSave;
+        UseLocalSave = EMUApplyConfig.DefaultConfig.UseLocalSave;
+        UseGoldbergExperimental = EMUApplyConfig.DefaultConfig.UseGoldbergExperimental;
+        GenerateInterfacesFile = EMUApplyConfig.DefaultConfig.GenerateInterfacesFile;
+        ForceGenerateInterfacesFiles = EMUApplyConfig.DefaultConfig.ForceGenerateInterfacesFiles;
     }
 
     public EMUApplyConfig GetEMUApplyConfig()
@@ -331,59 +331,59 @@ public class EMUConfigs
     /// <summary>
     ///     Set game language.
     /// </summary>
-    public EMUConfig.Languages Language { get; set; } = EMUConfigDefault.Language;
+    public EMUConfig.Languages Language { get; set; } = EMUConfig.DefaultConfig.Language;
 
     /// <summary>
     ///     Set Steam ID.
     /// </summary>
-    public string SteamID { get; set; } = EMUConfigDefault.SteamID.ConvertToUInt64().ToString();
+    public string SteamID { get; set; } = EMUConfig.DefaultConfig.SteamID.ConvertToUInt64().ToString();
 
     /// <summary>
     ///     Set Steam account name.
     /// </summary>
-    public string AccountName { get; set; } = EMUConfigDefault.AccountName;
+    public string AccountName { get; set; } = EMUConfig.DefaultConfig.AccountName;
 
     /// <summary>
     ///     Set custom emulator listen port.
     /// </summary>
-    public string ListenPort { get; set; } = EMUConfigDefault.ListenPort.ToString();
+    public string ListenPort { get; set; } = EMUConfig.DefaultConfig.ListenPort.ToString();
 
     /// <summary>
     ///     Set Custom broadcast IP.
     /// </summary>
-    public string CustomIP { get; set; } = EMUConfigDefault.CustomIP;
+    public string CustomIP { get; set; } = EMUConfig.DefaultConfig.CustomIP;
 
     /// <summary>
     ///     Generate custom_broadcasts.txt
     /// </summary>
-    public bool UseCustomIP { get; set; } = EMUConfigDefault.UseCustomIP;
+    public bool UseCustomIP { get; set; } = EMUConfig.DefaultConfig.UseCustomIP;
 
     /// <summary>
     ///     Disable all the networking functionality of the Steam emulator.
     /// </summary>
-    public bool DisableNetworking { get; set; } = EMUConfigDefault.DisableNetworking;
+    public bool DisableNetworking { get; set; } = EMUConfig.DefaultConfig.DisableNetworking;
 
     /// <summary>
     ///     Emable Steam emulator offline mode.
     /// </summary>
-    public bool Offline { get; set; } = EMUConfigDefault.Offline;
+    public bool Offline { get; set; } = EMUConfig.DefaultConfig.Offline;
 
     /// <summary>
     ///     Enable Steam emulator overlay.
     /// </summary>
-    public bool EnableOverlay { get; set; } = EMUConfigDefault.EnableOverlay;
+    public bool EnableOverlay { get; set; } = EMUConfig.DefaultConfig.EnableOverlay;
 
     public void ResettoDefault()
     {
-        Language = EMUConfigDefault.Language;
-        SteamID = EMUConfigDefault.SteamID.ConvertToUInt64().ToString();
-        AccountName = EMUConfigDefault.AccountName;
-        ListenPort = EMUConfigDefault.ListenPort.ToString();
-        CustomIP = EMUConfigDefault.CustomIP;
-        UseCustomIP = EMUConfigDefault.UseCustomIP;
-        DisableNetworking = EMUConfigDefault.DisableNetworking;
-        Offline = EMUConfigDefault.Offline;
-        EnableOverlay = EMUConfigDefault.EnableOverlay;
+        Language = EMUConfig.DefaultConfig.Language;
+        SteamID = EMUConfig.DefaultConfig.SteamID.ConvertToUInt64().ToString();
+        AccountName = EMUConfig.DefaultConfig.AccountName;
+        ListenPort = EMUConfig.DefaultConfig.ListenPort.ToString();
+        CustomIP = EMUConfig.DefaultConfig.CustomIP;
+        UseCustomIP = EMUConfig.DefaultConfig.UseCustomIP;
+        DisableNetworking = EMUConfig.DefaultConfig.DisableNetworking;
+        Offline = EMUConfig.DefaultConfig.Offline;
+        EnableOverlay = EMUConfig.DefaultConfig.EnableOverlay;
     }
 
     public EMUConfig GetEMUConfig()
@@ -410,53 +410,53 @@ public class SteamStubUnpackerConfigs
     /// <summary>
     ///     Keeps the .bind section in the unpacked file.
     /// </summary>
-    public bool KeepBind { get; set; } = SteamStubUnpackerConfigDefault.KeepBind;
+    public bool KeepBind { get; set; } = SteamStubUnpackerConfig.DefaultConfig.KeepBind;
 
     /// <summary>
     ///     Keeps the DOS stub in the unpacked file.
     /// </summary>
-    public bool KeepStub { get; set; } = SteamStubUnpackerConfigDefault.KeepStub;
+    public bool KeepStub { get; set; } = SteamStubUnpackerConfig.DefaultConfig.KeepStub;
 
     /// <summary>
     ///     Realigns the unpacked file sections.
     /// </summary>
-    public bool Realign { get; set; } = SteamStubUnpackerConfigDefault.Realign;
+    public bool Realign { get; set; } = SteamStubUnpackerConfig.DefaultConfig.Realign;
 
     /// <summary>
     ///     Recalculates the unpacked file checksum.
     /// </summary>
-    public bool ReCalcChecksum { get; set; } = SteamStubUnpackerConfigDefault.ReCalcChecksum;
+    public bool ReCalcChecksum { get; set; } = SteamStubUnpackerConfig.DefaultConfig.ReCalcChecksum;
 
     /// <summary>
     ///     Use Experimental Features.
     /// </summary>
-    public bool UseExperimentalFeatures { get; set; } = SteamStubUnpackerConfigDefault.UseExperimentalFeatures;
+    public bool UseExperimentalFeatures { get; set; } = SteamStubUnpackerConfig.DefaultConfig.UseExperimentalFeatures;
 
     /// <summary>
     ///     SteamAPICheckBypass Mode
     /// </summary>
-    public SteamAPICheckBypassModes SteamAPICheckBypassMode { get; set; } = SteamStubUnpackerConfigDefault.SteamAPICheckBypassMode;
+    public SteamAPICheckBypassModes SteamAPICheckBypassMode { get; set; } = SteamStubUnpackerConfig.DefaultConfig.SteamAPICheckBypassMode;
 
     /// <summary>
     ///     DLL hijacking name for SteamAPICheckBypass
     /// </summary>
-    public SteamAPICheckBypassDLLs SteamAPICheckBypassDLL { get; set; } = SteamStubUnpackerConfigDefault.SteamAPICheckBypassDLL;
+    public SteamAPICheckBypassDLLs SteamAPICheckBypassDLL { get; set; } = SteamStubUnpackerConfig.DefaultConfig.SteamAPICheckBypassDLL;
 
     /// <summary>
     ///     SteamAPI Check Bypass Nth Time Setting
     /// </summary>
-    public List<UInt64> SteamAPICheckBypassNthTime { get; set; } = SteamStubUnpackerConfigDefault.SteamAPICheckBypassNthTime;
+    public List<UInt64> SteamAPICheckBypassNthTime { get; set; } = SteamStubUnpackerConfig.DefaultConfig.SteamAPICheckBypassNthTime;
 
     public void ResettoDefault()
     {
-        KeepBind = SteamStubUnpackerConfigDefault.KeepBind;
-        KeepStub = SteamStubUnpackerConfigDefault.KeepStub;
-        Realign = SteamStubUnpackerConfigDefault.Realign;
-        ReCalcChecksum = SteamStubUnpackerConfigDefault.ReCalcChecksum;
-        UseExperimentalFeatures = SteamStubUnpackerConfigDefault.UseExperimentalFeatures;
-        SteamAPICheckBypassMode = SteamStubUnpackerConfigDefault.SteamAPICheckBypassMode;
-        SteamAPICheckBypassDLL = SteamStubUnpackerConfigDefault.SteamAPICheckBypassDLL;
-        SteamAPICheckBypassNthTime = SteamStubUnpackerConfigDefault.SteamAPICheckBypassNthTime;
+        KeepBind = SteamStubUnpackerConfig.DefaultConfig.KeepBind;
+        KeepStub = SteamStubUnpackerConfig.DefaultConfig.KeepStub;
+        Realign = SteamStubUnpackerConfig.DefaultConfig.Realign;
+        ReCalcChecksum = SteamStubUnpackerConfig.DefaultConfig.ReCalcChecksum;
+        UseExperimentalFeatures = SteamStubUnpackerConfig.DefaultConfig.UseExperimentalFeatures;
+        SteamAPICheckBypassMode = SteamStubUnpackerConfig.DefaultConfig.SteamAPICheckBypassMode;
+        SteamAPICheckBypassDLL = SteamStubUnpackerConfig.DefaultConfig.SteamAPICheckBypassDLL;
+        SteamAPICheckBypassNthTime = SteamStubUnpackerConfig.DefaultConfig.SteamAPICheckBypassNthTime;
     }
 
     public SteamStubUnpackerConfig GetSteamStubUnpackerConfig()
@@ -477,37 +477,37 @@ public class SteamStubUnpackerConfigs
 
 public class EMUGameInfoConfigs
 {
-    public EMUGameInfoConfig.GeneratorGameInfoAPI GameInfoAPI { get; set; } = EMUGameInfoConfigDefault.GameInfoAPI;
+    public EMUGameInfoConfig.GeneratorGameInfoAPI GameInfoAPI { get; set; } = EMUGameInfoConfig.DefaultConfig.GameInfoAPI;
 
     /// <summary>
     ///     Required when using Steam official Web API.
     /// </summary>
-    public string SteamWebAPIKey { get; set; } = EMUGameInfoConfigDefault.SteamWebAPIKey;
+    public string SteamWebAPIKey { get; set; } = EMUGameInfoConfig.DefaultConfig.SteamWebAPIKey;
 
     /// <summary>
     ///     Enable generate game achievement images.
     /// </summary>
-    public bool GenerateImages { get; set; } = EMUGameInfoConfigDefault.GenerateImages;
+    public bool GenerateImages { get; set; } = EMUGameInfoConfig.DefaultConfig.GenerateImages;
 
     [JsonIgnore] public string AppID { get; set; } = string.Empty;
 
     /// <summary>
     ///     Use Xan105 API for generating game schema.
     /// </summary>
-    public bool UseXan105API { get; set; } = EMUGameInfoConfigDefault.UseXan105API;
+    public bool UseXan105API { get; set; } = EMUGameInfoConfig.DefaultConfig.UseXan105API;
 
     /// <summary>
     ///     Use Steam Web App List when generating DLCs.
     /// </summary>
-    public bool UseSteamWebAppList { get; set; } = EMUGameInfoConfigDefault.UseSteamWebAppList;
+    public bool UseSteamWebAppList { get; set; } = EMUGameInfoConfig.DefaultConfig.UseSteamWebAppList;
 
     public void ResettoDefault()
     {
-        SteamWebAPIKey = EMUGameInfoConfigDefault.SteamWebAPIKey;
-        GameInfoAPI = EMUGameInfoConfigDefault.GameInfoAPI;
-        GenerateImages = EMUGameInfoConfigDefault.GenerateImages;
-        UseXan105API = EMUGameInfoConfigDefault.UseXan105API;
-        UseSteamWebAppList = EMUGameInfoConfigDefault.UseSteamWebAppList;
+        SteamWebAPIKey = EMUGameInfoConfig.DefaultConfig.SteamWebAPIKey;
+        GameInfoAPI = EMUGameInfoConfig.DefaultConfig.GameInfoAPI;
+        GenerateImages = EMUGameInfoConfig.DefaultConfig.GenerateImages;
+        UseXan105API = EMUGameInfoConfig.DefaultConfig.UseXan105API;
+        UseSteamWebAppList = EMUGameInfoConfig.DefaultConfig.UseSteamWebAppList;
     }
 
     public EMUGameInfoConfig GetEMUGameInfoConfig()
@@ -531,23 +531,23 @@ public class GenCrackOnlyConfigs
     /// <summary>
     ///     Crack only file output path.
     /// </summary>
-    public string OutputPath { get; set; } = GenCrackOnlyConfigDefault.OutputPath;
+    public string OutputPath { get; set; } = GenCrackOnlyConfig.DefaultConfig.OutputPath;
 
     /// <summary>
     ///     Create crack only readme file.
     /// </summary>
-    public bool CreateReadme { get; set; } = GenCrackOnlyConfigDefault.CreateReadme;
+    public bool CreateReadme { get; set; } = GenCrackOnlyConfig.DefaultConfig.CreateReadme;
 
     /// <summary>
     ///     Pack Crack only file with .zip archive.
     /// </summary>
-    public bool Pack { get; set; } = GenCrackOnlyConfigDefault.Pack;
+    public bool Pack { get; set; } = GenCrackOnlyConfig.DefaultConfig.Pack;
 
     public void ResettoDefault()
     {
-        OutputPath = GenCrackOnlyConfigDefault.OutputPath;
-        CreateReadme = GenCrackOnlyConfigDefault.CreateReadme;
-        Pack = GenCrackOnlyConfigDefault.Pack;
+        OutputPath = GenCrackOnlyConfig.DefaultConfig.OutputPath;
+        CreateReadme = GenCrackOnlyConfig.DefaultConfig.CreateReadme;
+        Pack = GenCrackOnlyConfig.DefaultConfig.Pack;
     }
 
     public GenCrackOnlyConfig GetGenCrackOnlyConfig()

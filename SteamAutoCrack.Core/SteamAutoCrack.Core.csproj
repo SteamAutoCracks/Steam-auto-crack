@@ -6,20 +6,20 @@
     <Nullable>enable</Nullable>
     <Platforms>x86</Platforms>
     <PlatformTarget>x86</PlatformTarget>
-    <Version>3.4.5.2</Version>
+    <Version>3.4.5.3</Version>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AuthenticodeExaminer" Version="0.3.0" />
+    <PackageReference Include="AuthenticodeExaminer" Version="0.4.0" />
     <PackageReference Include="FuzzySharp" Version="2.0.2" />
     <PackageReference Include="IniFile.NET" Version="1.6.0" />
     <PackageReference Include="NinjaNye.SearchExtensions" Version="4.0.1" />
     <PackageReference Include="Serilog" Version="4.2.0" />
-    <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
-    <PackageReference Include="SharpSevenZip" Version="2.0.19" />
+    <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
+    <PackageReference Include="SharpSevenZip" Version="2.0.22" />
     <PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
-    <PackageReference Include="SteamKit2" Version="3.0.1" />
-    <PackageReference Include="ValveKeyValue" Version="0.12.0.391" />
+    <PackageReference Include="SteamKit2" Version="3.2.0" />
+    <PackageReference Include="ValveKeyValue" Version="0.13.1.398" />
   </ItemGroup>
 
   <ItemGroup>
@@ -47,7 +47,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="C:\Users\Mechrevo\.nuget\packages\sharpsevenzip\2.0.12\build\x64\7z.dll">
+    <None Update="x64\7z.dll">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
   </ItemGroup>

@@ -24,8 +24,8 @@ public partial class Settings : Window
         DataContext = viewModel;
     }
 
-    public event SettingsClosingHandler ClosingEvent;
-    public event ReloadValueHandler ReloadValueEvent;
+    public event SettingsClosingHandler? ClosingEvent;
+    public event ReloadValueHandler? ReloadValueEvent;
 
     public void ReloadValue()
     {

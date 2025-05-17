@@ -9,7 +9,7 @@ internal class AppIDFinderViewModel : INotifyPropertyChanged
 {
     #region INPC
 
-    public event PropertyChangedEventHandler PropertyChanged;
+    public event PropertyChangedEventHandler? PropertyChanged;
 
     private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
     {
@@ -62,7 +62,7 @@ internal class AppIDFinderViewModel : INotifyPropertyChanged
 
     public IEnumerable<SteamApp> Apps
     {
-        get => _apps;
+        get => _apps!;
         set
         {
             _apps = value;
@@ -70,7 +70,7 @@ internal class AppIDFinderViewModel : INotifyPropertyChanged
         }
     }
 
-    private IEnumerable<SteamApp> _apps;
+    private IEnumerable<SteamApp>? _apps;
 
     public SteamApp Selected { get; set; } = new();
 

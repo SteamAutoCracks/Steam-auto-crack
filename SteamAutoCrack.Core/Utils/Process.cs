@@ -52,7 +52,7 @@ public class Processor : IProcessor
             if (Config.Config.ProcessConfigs.GenerateEMUConfig)
             {
                 _log.Information("----- 2. Generate Goldberg Steam Emulator Configuration -----");
-                await new EMUConfigGenerator().Generate(eMUConfigs).ConfigureAwait(false);
+                new EMUConfigGenerator().Generate(eMUConfigs);
                 _log.Information("--------------------");
             }
 
@@ -146,7 +146,7 @@ public class Processor : IProcessor
             if (Config.Config.ProcessConfigs.GenerateEMUConfig)
             {
                 _log.Information("----- 2. Generate Goldberg Steam Emulator Configuration -----");
-                await new EMUConfigGenerator().Generate(eMUConfigs).ConfigureAwait(false);
+                new EMUConfigGenerator().Generate(eMUConfigs);
                 _log.Information("--------------------");
             }
 

@@ -25,7 +25,7 @@ internal class MainWindowViewModel : INotifyPropertyChanged
 
     #region INPC
 
-    public event PropertyChangedEventHandler PropertyChanged;
+    public event PropertyChangedEventHandler? PropertyChanged;
 
     private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
     {
