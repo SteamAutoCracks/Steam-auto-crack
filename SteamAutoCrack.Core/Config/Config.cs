@@ -361,7 +361,7 @@ public class EMUConfigs
     /// <summary>
     /// Encrypted Application Ticket.
     /// </summary>
-    [JsonIgnore] public string Ticket { get; set; } = EMUConfig.DefaultConfig.Ticket;
+    public string Ticket { get; set; } = EMUConfig.DefaultConfig.Ticket;
 
     /// <summary>
     ///     Disable all the networking functionality of the Steam emulator.
