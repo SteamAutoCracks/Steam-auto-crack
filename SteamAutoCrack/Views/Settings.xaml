@@ -7,37 +7,43 @@
         xmlns:utils="clr-namespace:SteamAutoCrack.Utils"
         xmlns:steamAutoCrack="clr-namespace:SteamAutoCrack"
         mc:Ignorable="d"
-        Title="{I18N {x:Static steamAutoCrack:LangKeys.Settings}}" Height="300" Width="500"
+        Title="{I18N {x:Static steamAutoCrack:LangKeys.Settings}}" Height="400" Width="500"
         ResizeMode="CanMinimize">
     <Window.DataContext>
         <viewmodels:SettingsViewModel/>
     </Window.DataContext>
     <Window.Resources>
-        <utils:EnumDescriptionConverter x:Key="enumConverter" />
+        <ResourceDictionary>
+            <ScaleTransform x:Key="GlobalScale" ScaleX="0.90" ScaleY="0.90" />
+            <utils:EnumDescriptionConverter x:Key="enumConverter" />
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/PresentationFramework.Fluent;component/Themes/Fluent.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Window.Resources>
     <Grid>
         <TextBlock HorizontalAlignment="Center" Margin="0,10,0,0" TextWrapping="Wrap" Text="{I18N {x:Static steamAutoCrack:LangKeys.Settings}}" VerticalAlignment="Top" FontSize="20"/>
-        <Grid Margin="0,40,0,170">
+        <Grid Margin="0,40,0,0" Height="65" Width="480" VerticalAlignment="Top">
             <Border BorderBrush="Black" BorderThickness="1"/>
-            <CheckBox x:Name="SaveConfig" Content="{I18N {x:Static steamAutoCrack:LangKeys.SaveConfigFile}}" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" IsChecked="{Binding SaveCrackConfig}"/>
-            <CheckBox x:Name="DebugLog" Content="{I18N {x:Static steamAutoCrack:LangKeys.EnableDebugLog}}" HorizontalAlignment="Left" Margin="250,10,0,0" VerticalAlignment="Top" IsChecked="{Binding EnableDebugLog}"/>
+            <CheckBox x:Name="SaveConfig" Content="{I18N {x:Static steamAutoCrack:LangKeys.SaveConfigFile}}" HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" IsChecked="{Binding SaveCrackConfig}"/>
+            <CheckBox x:Name="DebugLog" Content="{I18N {x:Static steamAutoCrack:LangKeys.EnableDebugLog}}" HorizontalAlignment="Left" Margin="250,0,0,0" VerticalAlignment="Top" IsChecked="{Binding EnableDebugLog}"/>
             <CheckBox x:Name="LogToFile" Content="{I18N {x:Static steamAutoCrack:LangKeys.OutputLogToFile}}" HorizontalAlignment="Left" Margin="10,30,0,0" VerticalAlignment="Top" IsChecked="{Binding LogToFile}"/>
-            <Button x:Name="RestoreConfig" Content="{I18N {x:Static steamAutoCrack:LangKeys.RestoreToDefaultConfig}}" HorizontalAlignment="Left" Margin="250,30,0,0" VerticalAlignment="Top" Width="155" Click="RestoreConfig_Click"/>
+            <Button x:Name="RestoreConfig" Content="{I18N {x:Static steamAutoCrack:LangKeys.RestoreToDefaultConfig}}" HorizontalAlignment="Left" Margin="250,30,0,0" VerticalAlignment="Top" Width="175" Click="RestoreConfig_Click"/>
         </Grid>
-        <Grid Margin="0,100,0,110">
+        <Grid Margin="0,110,0,0" Height="90" Width="480" VerticalAlignment="Top">
             <Border BorderBrush="Black" BorderThickness="1"/>
-            <Button x:Name="Download" HorizontalAlignment="Left" Margin="10,25,0,0" VerticalAlignment="Top" Click="Download_Click" Content="{I18N {x:Static steamAutoCrack:LangKeys.UpdateDownload}}" Width="120"/>
+            <Button x:Name="Download" HorizontalAlignment="Left" Margin="10,25,0,0" VerticalAlignment="Top" Click="Download_Click" Content="{I18N {x:Static steamAutoCrack:LangKeys.UpdateDownload}}" Width="200"/>
             <TextBlock x:Name="GoldbergVersion" HorizontalAlignment="Left" Margin="10,5,0,0" TextWrapping="Wrap" Text="{I18N {x:Static steamAutoCrack:LangKeys.CurrentGoldbergSteamEmulatorCommitid}}" VerticalAlignment="Top"/>
             <TextBlock x:Name="GoldbergVersionStr" HorizontalAlignment="Left" Margin="200,5,0,0" TextWrapping="Wrap" Text="{Binding GoldbergVer}" VerticalAlignment="Top"/>
-            <CheckBox x:Name="ForceUpdate" Content="{I18N {x:Static steamAutoCrack:LangKeys.ForceDownload}}" HorizontalAlignment="Left" Margin="135,25,0,0" VerticalAlignment="Top" IsChecked="{Binding ForceUpdate}"/>
-            <Button x:Name="UpdateAppList" Content="{I18N {x:Static steamAutoCrack:LangKeys.ForceUpdateSteamAppList}}" HorizontalAlignment="Left" Margin="305,25,0,0" VerticalAlignment="Top" Click="UpdateAppList_Click"/>
+            <CheckBox x:Name="ForceUpdate" Content="{I18N {x:Static steamAutoCrack:LangKeys.ForceDownload}}" HorizontalAlignment="Left" Margin="230,23,0,0" VerticalAlignment="Top" IsChecked="{Binding ForceUpdate}"/>
+            <Button x:Name="UpdateAppList" Content="{I18N {x:Static steamAutoCrack:LangKeys.ForceUpdateSteamAppList}}" HorizontalAlignment="Left" Margin="10,55,0,0" VerticalAlignment="Top" Click="UpdateAppList_Click" Width="200"/>
         </Grid>
 
 
-        <Grid Margin="0,158,0,72">
+        <Grid Margin="0,205,0,0" Height="50" Width="480" VerticalAlignment="Top">
             <Border BorderBrush="Black" BorderThickness="1"/>
-            <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="{I18N {x:Static steamAutoCrack:LangKeys.Language}}" VerticalAlignment="Top"/>
-            <ComboBox x:Name="Language" HorizontalAlignment="Left" Margin="80,8,0,0" VerticalAlignment="Top" Width="80" ItemsSource="{Binding Languages}" SelectedItem="{Binding Language}">
+            <TextBlock HorizontalAlignment="Left" Margin="10,17,0,0" TextWrapping="Wrap" Text="{I18N {x:Static steamAutoCrack:LangKeys.Language}}" VerticalAlignment="Top"/>
+            <ComboBox x:Name="Language" HorizontalAlignment="Left" Margin="80,8,0,0" VerticalAlignment="Top" Width="130" ItemsSource="{Binding Languages}" SelectedItem="{Binding Language}">
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding Converter={StaticResource enumConverter}}"/>
@@ -47,7 +53,7 @@
             
 
         </Grid>
-        <Button x:Name="Close" Content="{I18N {x:Static steamAutoCrack:LangKeys.Close}}" HorizontalAlignment="Center" Margin="0,230,0,0" VerticalAlignment="Top" Width="77" Click="Close_Click" IsDefault="True"/>
+        <Button x:Name="Close" Content="{I18N {x:Static steamAutoCrack:LangKeys.Close}}" HorizontalAlignment="Center" Margin="0,0,0,10" VerticalAlignment="Bottom" Width="77" Click="Close_Click" IsDefault="True"/>
 
 
 

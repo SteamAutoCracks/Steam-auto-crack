@@ -359,6 +359,11 @@ public class EMUConfigs
     public bool UseCustomIP { get; set; } = EMUConfig.DefaultConfig.UseCustomIP;
 
     /// <summary>
+    /// Encrypted Application Ticket.
+    /// </summary>
+    [JsonIgnore] public string Ticket { get; set; } = EMUConfig.DefaultConfig.Ticket;
+
+    /// <summary>
     ///     Disable all the networking functionality of the Steam emulator.
     /// </summary>
     public bool DisableNetworking { get; set; } = EMUConfig.DefaultConfig.DisableNetworking;
@@ -381,6 +386,7 @@ public class EMUConfigs
         ListenPort = EMUConfig.DefaultConfig.ListenPort.ToString();
         CustomIP = EMUConfig.DefaultConfig.CustomIP;
         UseCustomIP = EMUConfig.DefaultConfig.UseCustomIP;
+        Ticket = EMUConfig.DefaultConfig.Ticket;
         DisableNetworking = EMUConfig.DefaultConfig.DisableNetworking;
         Offline = EMUConfig.DefaultConfig.Offline;
         EnableOverlay = EMUConfig.DefaultConfig.EnableOverlay;
@@ -392,6 +398,7 @@ public class EMUConfigs
         {
             AccountName = AccountName,
             UseCustomIP = UseCustomIP,
+            Ticket = Ticket,
             DisableNetworking = DisableNetworking,
             Offline = Offline,
             EnableOverlay = EnableOverlay,

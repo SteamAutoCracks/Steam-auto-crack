@@ -30,18 +30,21 @@ public class SteamApp
 public class AppList
 {
     [JsonPropertyName("apps")] public List<SteamApp>? Apps { get; set; }
+    [JsonPropertyName("have_more_results")] public bool HaveMoreResults { get; set; }
+
+    [JsonPropertyName("last_appid")] public uint LastAppId { get; set; }
 }
 
-public class SteamAppsV2
+public class StoreSteamAppsV1
 {
-    [JsonPropertyName("applist")] public AppList? AppList { get; set; }
+    [JsonPropertyName("response")] public AppList? AppList { get; set; }
 }
 
 public class SteamAppList
 {
     private const int FuzzySearchScore = 80;
 
-    private static readonly string steamapplisturl = "https://api.steampowered.com/ISteamApps/GetAppList/v2/";
+    private static readonly string steamapplisturl = "https://api.steampowered.com/IStoreService/GetAppList/v1/";
 
     private static readonly ILogger _log = Log.ForContext<SteamAppList>();
 
@@ -59,7 +62,7 @@ public class SteamAppList
     {
         try
         {
-            bDisposed = true;
+            bDisposed = false;
             _log.Debug("Initializing Steam App list...");
             if (!Directory.Exists(Config.Config.TempPath))
                 Directory.CreateDirectory(Config.Config.TempPath);
@@ -71,7 +74,7 @@ public class SteamAppList
             var count = await db.Table<SteamApp>().CountAsync().ConfigureAwait(false);
 
             bool dbExistsWithData = File.Exists(Database) && count > 0;
-            bool needsUpdate = DateTime.Now.Subtract(File.GetLastWriteTimeUtc(Database)).TotalDays >= 1 || count == 0 || forceupdate;
+            bool needsUpdate = DateTime.Now.Subtract(File.GetLastWriteTimeUtc(Database)).TotalDays >= 7 || count == 0 || forceupdate;
             if (bInited && !needsUpdate && !forceupdate)
             {
                 _log.Debug("Already initialized Steam App list.");
@@ -88,33 +91,84 @@ public class SteamAppList
 
             if (needsUpdate)
             {
-                while (true)
+                try
                 {
-                    try
+                    _log.Information("Updating Steam App list...");
+                    if (Config.Config.EMUGameInfoConfigs.SteamWebAPIKey == String.Empty)
                     {
-                        _log.Information("Updating Steam App list...");
-                        using var client = new HttpClient();
-                        var response = await client.GetAsync(steamapplisturl).ConfigureAwait(false);
-                        response.EnsureSuccessStatusCode();
-                        var responseBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                        _log.Warning("Steam Web API Key not set. Please set it to update Steam App List.");
+                        if (!dbExistsWithData) bDisposed = true;
+                        return;
+                    }
 
-                        var steamApps = DeserializeSteamApps(responseBody);
-                        var appList = new HashSet<SteamApp>();
-                        if (steamApps?.AppList?.Apps != null)
+                    using var client = new HttpClient();
+                    uint lastAppId = 0;
+                    bool haveMore = false;
+                    var allApps = new List<SteamApp>();
+                    var requestKey = Config.Config.EMUGameInfoConfigs.SteamWebAPIKey;
+
+                    var maxRetries = 3;
+
+                    do
+                    {
+                        var url = $"{steamapplisturl}?key={requestKey}&max_results=50000&last_appid={lastAppId}";
+                        _log.Debug("Requesting Steam App list batch with last_appid={lastAppId}", lastAppId);
+
+                        var attempt = 0;
+                        bool batchSuccess = false;
+                        while (attempt < maxRetries && !batchSuccess)
                         {
-                            foreach (var app in steamApps.AppList.Apps)
-                                appList.Add(app);
+                            attempt++;
+                            try
+                            {
+                                var response = await client.GetAsync(url).ConfigureAwait(false);
+                                response.EnsureSuccessStatusCode();
+                                var responseBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+                                var steamApps = DeserializeSteamApps(responseBody);
+                                if (steamApps?.AppList?.Apps != null && steamApps.AppList.Apps.Count > 0)
+                                {
+                                    allApps.AddRange(steamApps.AppList.Apps);
+                                    _log.Debug("Fetched {count} apps in this batch.", steamApps.AppList.Apps.Count);
+                                }
+
+                                haveMore = steamApps?.AppList?.HaveMoreResults ?? false;
+                                lastAppId = steamApps?.AppList?.LastAppId ?? 0;
+
+                                batchSuccess = true;
+                            }
+                            catch (Exception ex)
+                            {
+                                _log.Warning(ex, "Failed to fetch Steam App batch (attempt {attempt}/{maxRetries}).", attempt, maxRetries);
+                                if (attempt < maxRetries)
+                                {
+                                    var delayMs = (int)(1000 * Math.Pow(2, attempt - 1));
+                                    await Task.Delay(delayMs).ConfigureAwait(false);
+                                }
+                                else
+                                {
+                                    _log.Error(ex, "Exhausted retries fetching Steam App list. Aborting update.");
+                                    if (!dbExistsWithData) bDisposed = true;
+                                    return;
+                                }
+                            }
                         }
 
-                        await db.InsertAllAsync(appList, "OR IGNORE").ConfigureAwait(false);
-                        _log.Information("Updated Steam App list.");
+                    } while (haveMore);
 
-                        break;
-                    }
-                    catch (Exception ex)
+                    if (allApps.Count > 0)
                     {
-                        _log.Error("Failed to initialize Steam App list, Retrying...", ex);
+                        await db.InsertAllAsync(allApps, "OR IGNORE").ConfigureAwait(false);
+                        _log.Information("Updated Steam App list. Total fetched apps: {count}", allApps.Count);
                     }
+                    else
+                    {
+                        _log.Information("No apps fetched from Steam App list update.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _log.Error(ex, "Failed to initialize Steam App list, Retrying...");
                 }
             }
             else
@@ -134,15 +188,15 @@ public class SteamAppList
         }
         catch (Exception ex)
         {
-            _log.Error("Failed to initialize Steam App list.", ex);
-            bDisposed = false;
+            _log.Error(ex, "Failed to initialize Steam App list.");
+            bDisposed = true;
             return;
         }
     }
 
     public static async Task WaitForReady()
     {
-        if (bDisposed == false)
+        if (bDisposed == true)
         {
             _log.Error("Not initialized Steam App list.");
             throw new Exception("Not initialized Steam App list.");
@@ -152,10 +206,21 @@ public class SteamAppList
         await _initializationTcs.Task.ConfigureAwait(false);
     }
 
-    private static SteamAppsV2? DeserializeSteamApps(string json)
+    private static StoreSteamAppsV1? DeserializeSteamApps(string json)
     {
-        var data = JsonSerializer.Deserialize<SteamAppsV2>(json);
-        return data ?? new SteamAppsV2 { AppList = new AppList { Apps = new List<SteamApp>() } };
+        try
+        {
+            var opts = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+            };
+            return JsonSerializer.Deserialize<StoreSteamAppsV1>(json, opts);
+        }
+        catch (Exception ex)
+        {
+            _log.Error(ex, "Failed to deserialize Steam App list JSON.");
+            return new StoreSteamAppsV1 { AppList = new AppList { Apps = new List<SteamApp>(), HaveMoreResults = false, LastAppId = 0 } };
+        }
     }
 
     public static async Task<IEnumerable<SteamApp>> GetListOfAppsByName(string name)

@@ -9,7 +9,7 @@
 ![GitHub Repo stars](https://img.shields.io/github/stars/SteamAutoCracks/Steam-auto-crack?color=yellow&label=Stars)
 
 Automatic Crack Games With SteamStub and Steam API.  
-Latest Version 3.0 Using .Net 8.0.  
+Latest Version 3.0 Using .Net 10.0.  
 [Latest Release](https://github.com/SteamAutoCracks/Steam-auto-crack/releases)  
 [Wiki](https://github.com/SteamAutoCracks/Steam-auto-crack/wiki)  
 [Official Discord](https://discord.gg/BZQtrBSUnd)  

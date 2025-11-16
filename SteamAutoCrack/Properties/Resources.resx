@@ -178,7 +178,7 @@
     <value>Failed to Check goldberg emulator.</value>
   </data>
   <data name="FailedToLoadAppListPleaseRestartSteamAutoCrackToTryAgain" xml:space="preserve">
-    <value>Failed to load App List. Please restart SteamAutoCrack to try again.</value>
+    <value>Failed to load App List. Please Fill Steam Web API key and update Steam App list in settings.</value>
   </data>
   <data name="File" xml:space="preserve">
     <value>File</value>
@@ -356,5 +356,8 @@
   </data>
   <data name="SteamAPICheckBypassMode" xml:space="preserve">
     <value>SteamAPICheckBypass Mode:</value>
+  </data>
+  <data name="Ticket" xml:space="preserve">
+    <value>Ticket:</value>
   </data>
 </root>

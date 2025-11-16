@@ -19,7 +19,7 @@ namespace SteamAutoCrack.Properties {
     // 类通过类似于 ResGen 或 Visual Studio 的工具自动生成的。
     // 若要添加或移除成员，请编辑 .ResX 文件，然后重新运行 ResGen
     // (以 /str 作为命令选项)，或重新生成 VS 项目。
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "18.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class Resources {
@@ -295,7 +295,7 @@ namespace SteamAutoCrack.Properties {
         }
         
         /// <summary>
-        ///   查找类似 Failed to load App List. Please restart SteamAutoCrack to try again. 的本地化字符串。
+        ///   查找类似 Failed to load App List. Please Fill Steam Web API key and update Steam App list in settings. 的本地化字符串。
         /// </summary>
         public static string FailedToLoadAppListPleaseRestartSteamAutoCrackToTryAgain {
             get {
@@ -714,6 +714,15 @@ namespace SteamAutoCrack.Properties {
         public static string Stop {
             get {
                 return ResourceManager.GetString("Stop", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Ticket: 的本地化字符串。
+        /// </summary>
+        public static string Ticket {
+            get {
+                return ResourceManager.GetString("Ticket", resourceCulture);
             }
         }
         

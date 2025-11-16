@@ -8,18 +8,24 @@
         xmlns:utils="clr-namespace:SteamAutoCrack.Utils"
         xmlns:steamAutoCrack="clr-namespace:SteamAutoCrack"
         mc:Ignorable="d"
-        Title="SteamAutoCrack" Height="700" Width="1000"
+        Title="SteamAutoCrack" Height="900" Width="1200"
         ResizeMode="CanMinimize"
         Closing="MainWindow_Closing"  >
     <Window.DataContext>
         <viewmodels:MainWindowViewModel/>
     </Window.DataContext>
     <Window.Resources>
-        <utils:EnumDescriptionConverter x:Key="enumConverter" />
+        <ResourceDictionary>
+            <ScaleTransform x:Key="GlobalScale" ScaleX="0.90" ScaleY="0.90" />
+            <utils:EnumDescriptionConverter x:Key="enumConverter" />
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/PresentationFramework.Fluent;component/Themes/Fluent.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Window.Resources>
-    <Grid>
+    <Grid LayoutTransform="{StaticResource GlobalScale}">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="500*"/>
+            <ColumnDefinition Width="550"/>
             <ColumnDefinition Width="500*"/>
         </Grid.ColumnDefinitions>
 
@@ -27,40 +33,40 @@
         <TextBlock x:Name="SteamAutoCrack" HorizontalAlignment="Left" Margin="175,10,0,0" TextWrapping="Wrap" Text="{Binding Ver}" VerticalAlignment="Top" Height="35" Width="235" FontSize="20"/>
 
         <TextBlock Grid.Column="1" HorizontalAlignment="Left" Margin="10,20,0,0" TextWrapping="Wrap" Text="{I18N {x:Static steamAutoCrack:LangKeys.Log}}" VerticalAlignment="Top" Height="19" Width="39"/>
-        <Button x:Name="Clear_Log" Grid.Column="1" Content="{I18N {x:Static steamAutoCrack:LangKeys.ClearLog}}" HorizontalAlignment="Left" Margin="380,15,0,0" VerticalAlignment="Top" Height="20" RenderTransformOrigin="0.82,-0.368" Width="95" Click="Clear_Log_Click"/>
-        <Button x:Name="Settings" Content="{I18N {x:Static steamAutoCrack:LangKeys.Settings}}" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="24" Width="65" Click="Settings_Click"/>
-        <Button x:Name="About" Content="{I18N {x:Static steamAutoCrack:LangKeys.About}}" HorizontalAlignment="Left" Margin="425,10,0,0" VerticalAlignment="Top" Height="24" Width="65" Click="About_Click"/>
-        <Button x:Name="Start" Content="{Binding StartBtnString}" HorizontalAlignment="Center" Margin="0,630,150,0" VerticalAlignment="Top" Height="24" Width="85" Click="Start_Click" IsDefault="True"/>
-        <Button x:Name="Exit" Content="{I18N {x:Static steamAutoCrack:LangKeys.Exit}}" HorizontalAlignment="Center" Margin="150,630,0,0" VerticalAlignment="Top" Height="24" Width="85" Click="Exit_Click"/>
+        <Button x:Name="Clear_Log" Grid.Column="1" Content="{I18N {x:Static steamAutoCrack:LangKeys.ClearLog}}" HorizontalAlignment="Right" Margin="0,15,15,0" VerticalAlignment="Top" Width="95" Click="Clear_Log_Click"/>
+        <Button x:Name="Settings" Content="{I18N {x:Static steamAutoCrack:LangKeys.Settings}}" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"  Click="Settings_Click" Width="70"/>
+        <Button x:Name="About" Content="{I18N {x:Static steamAutoCrack:LangKeys.About}}" HorizontalAlignment="Left" Margin="485,10,0,0" VerticalAlignment="Top" Click="About_Click" Width="65"/>
+        <Button x:Name="Start" Content="{Binding StartBtnString}" HorizontalAlignment="Center" Margin="0,0,200,10" VerticalAlignment="Bottom" Width="90" Click="Start_Click" IsDefault="True"/>
+        <Button x:Name="Exit" Content="{I18N {x:Static steamAutoCrack:LangKeys.Exit}}" HorizontalAlignment="Center" Margin="200,0,0,10" VerticalAlignment="Bottom" Width="90" Click="Exit_Click"/>
         <ListView x:Name="LogBox" Grid.Column="1" Margin="10,40,15,10" Foreground="Black">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="{I18N {x:Static steamAutoCrack:LangKeys.Level}}" Width="50" DisplayMemberBinding="{Binding Level}"/>
+                    <GridViewColumn Header="{I18N {x:Static steamAutoCrack:LangKeys.Level}}" Width="55" DisplayMemberBinding="{Binding Level}"/>
                     <GridViewColumn Header="{I18N {x:Static steamAutoCrack:LangKeys.Source}}" Width="100" DisplayMemberBinding="{Binding Source}"/>
-                    <GridViewColumn Header="{I18N {x:Static steamAutoCrack:LangKeys.Message}}" Width="500" DisplayMemberBinding="{Binding Message}"/>
+                    <GridViewColumn Header="{I18N {x:Static steamAutoCrack:LangKeys.Message}}" Width="700" DisplayMemberBinding="{Binding Message}"/>
                 </GridView>
             </ListView.View>
         </ListView>
 
-        <TextBlock HorizontalAlignment="Left" Margin="10,50,0,0" Text="{I18N {x:Static steamAutoCrack:LangKeys.Path}}" VerticalAlignment="Top"/>
-        <TextBox x:Name="InputPath" HorizontalAlignment="Left" Margin="45,50,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="410" MaxLines="1" PreviewDragOver="InputPath_PreviewDragOver" PreviewDrop="InputPath_PreviewDrop" Text="{Binding InputPath}"/>
-        <Button x:Name="Select" Content="..." HorizontalAlignment="Left" Margin="460,50,0,0" VerticalAlignment="Top" Width="25" Height="17" Click="Select_Click"/>
+        <TextBlock HorizontalAlignment="Left" Margin="10,60,0,0" Text="{I18N {x:Static steamAutoCrack:LangKeys.Path}}" VerticalAlignment="Top"/>
+        <TextBox x:Name="InputPath" HorizontalAlignment="Left" Margin="45,50,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="460" MaxLines="1" PreviewDragOver="InputPath_PreviewDragOver" PreviewDrop="InputPath_PreviewDrop" Text="{Binding InputPath}"/>
+        <Button x:Name="Select" Content="..." HorizontalAlignment="Left" Margin="510,52,0,0" VerticalAlignment="Top" Click="Select_Click"/>
 
-        <CheckBox x:Name="GenerateEMUGameInfo" Content="{I18N {x:Static steamAutoCrack:LangKeys._1GenerateGoldbergSteamEmulatorGameInfo}}" Margin="10,75,175,570" IsChecked="{Binding GenerateEMUGameInfo}"/>
-        <Grid Margin="10,35,0,415" Height="100" Width="480" Name="GenerateEMUGameInfoGrid">
+        <CheckBox x:Name="GenerateEMUGameInfo" Content="{I18N {x:Static steamAutoCrack:LangKeys._1GenerateGoldbergSteamEmulatorGameInfo}}" Margin="13,80,0,0" IsChecked="{Binding GenerateEMUGameInfo}" VerticalAlignment="Top"/>
+        <Grid Margin="10,110,0,0" Height="140" Width="535" Name="GenerateEMUGameInfoGrid" VerticalAlignment="Top">
             <Border BorderBrush="Black" BorderThickness="1"/>
-            <TextBlock HorizontalAlignment="Left" Margin="10,5,0,0" Text="{I18N {x:Static steamAutoCrack:LangKeys.SteamAppID}}" VerticalAlignment="Top"/>
-            <TextBox x:Name="AppID" HorizontalAlignment="Left" Margin="95,5,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="65" MaxLines="1" MaxLength="8" Text="{Binding AppID}" PreviewTextInput="AppID_PreviewTextInput" DataObject.Pasting="AppID_Pasting"/>
-            <Button x:Name="AppIDFinder" Content="{I18N {x:Static steamAutoCrack:LangKeys.AppIDFinder}}" HorizontalAlignment="Left" Margin="170,5,0,0" VerticalAlignment="Top" Width="90" Click="AppIDFinder_Click"/>
-            <TextBlock HorizontalAlignment="Left" Margin="270,5,0,0" VerticalAlignment="Top" Text="{I18N {x:Static steamAutoCrack:LangKeys.OrGetSteamAppIDOn}}"/>
-            <TextBlock HorizontalAlignment="Left" Margin="410,5,0,0" VerticalAlignment="Top">
+            <TextBlock HorizontalAlignment="Left" Margin="10,13,0,0" Text="{I18N {x:Static steamAutoCrack:LangKeys.SteamAppID}}" VerticalAlignment="Top"/>
+            <TextBox x:Name="AppID" HorizontalAlignment="Left" Margin="95,5,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="105" MaxLines="1" MaxLength="8" Text="{Binding AppID}" PreviewTextInput="AppID_PreviewTextInput" DataObject.Pasting="AppID_Pasting"/>
+            <Button x:Name="AppIDFinder" Content="{I18N {x:Static steamAutoCrack:LangKeys.AppIDFinder}}" HorizontalAlignment="Left" Margin="200,5,0,0" VerticalAlignment="Top" Width="100" Click="AppIDFinder_Click"/>
+            <TextBlock HorizontalAlignment="Left" Margin="305,13,0,0" VerticalAlignment="Top" Text="{I18N {x:Static steamAutoCrack:LangKeys.OrGetSteamAppIDOn}}"/>
+            <TextBlock HorizontalAlignment="Left" Margin="445,13,0,0" VerticalAlignment="Top">
                 <Hyperlink NavigateUri="https://steamdb.info/" RequestNavigate="Hyperlink_RequestNavigate">
                     SteamDB
                 </Hyperlink>
             </TextBlock>
             
-            <TextBlock HorizontalAlignment="Left" Margin="10,32,0,0" TextWrapping="Wrap" Text="{I18N {x:Static steamAutoCrack:LangKeys.GeneratorAPI}}" VerticalAlignment="Top"/>
-            <ComboBox x:Name="Generator" HorizontalAlignment="Left" Margin="100,30,0,0" VerticalAlignment="Top" Width="130" ItemsSource="{Binding GameInfoAPIs}" SelectedItem="{Binding GameInfoAPI}">
+            <TextBlock HorizontalAlignment="Left" Margin="10,48,0,0" TextWrapping="Wrap" Text="{I18N {x:Static steamAutoCrack:LangKeys.GeneratorAPI}}" VerticalAlignment="Top"/>
+            <ComboBox x:Name="Generator" HorizontalAlignment="Left" Margin="100,40,0,0" VerticalAlignment="Top" Width="140" ItemsSource="{Binding GameInfoAPIs}" SelectedItem="{Binding GameInfoAPI}">
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding Converter={StaticResource enumConverter}}"/>
@@ -72,60 +78,63 @@
             <CheckBox x:Name="UseXan105API" Content="{I18N {x:Static steamAutoCrack:LangKeys.UseXan105API}}" HorizontalAlignment="Left" Margin="10,58,0,0" VerticalAlignment="Top" IsChecked="{Binding UseXan105API}"/>
             -->
             
-            <TextBlock HorizontalAlignment="Left" Margin="10,58,0,0" TextWrapping="Wrap" Text="{I18N {x:Static steamAutoCrack:LangKeys.SteamWebAPIKey}}" VerticalAlignment="Top"/>
-            <CheckBox x:Name="UseSteamWebAppList" Content="{I18N {x:Static steamAutoCrack:LangKeys.UseSteamWebAppList}}" HorizontalAlignment="Left" Margin="10,80,0,0" VerticalAlignment="Top" IsChecked="{Binding UseSteamWebAppList}"/>
-            <CheckBox x:Name="GenerateImages" Content="{I18N {x:Static steamAutoCrack:LangKeys.GenerateAchievementImages}}" HorizontalAlignment="Left" Margin="215,80,0,0" VerticalAlignment="Top" IsChecked="{Binding GenerateImages}"/>
-            <TextBox x:Name="SteamWebAPIKey" HorizontalAlignment="Left" Margin="140,58,0,0" TextWrapping="NoWrap" Text="{Binding SteamWebAPIKey}" VerticalAlignment="Top" Width="312" MaxLines="1"/>
+            <TextBlock HorizontalAlignment="Left" Margin="10,82,0,0" TextWrapping="Wrap" Text="{I18N {x:Static steamAutoCrack:LangKeys.SteamWebAPIKey}}" VerticalAlignment="Top"/>
+            <CheckBox x:Name="UseSteamWebAppList" Content="{I18N {x:Static steamAutoCrack:LangKeys.UseSteamWebAppList}}" HorizontalAlignment="Left" Margin="10,105,0,0" VerticalAlignment="Top" IsChecked="{Binding UseSteamWebAppList}"/>
+            <CheckBox x:Name="GenerateImages" Content="{I18N {x:Static steamAutoCrack:LangKeys.GenerateAchievementImages}}" HorizontalAlignment="Left" Margin="215,105,0,0" VerticalAlignment="Top" IsChecked="{Binding GenerateImages}"/>
+            <TextBox x:Name="SteamWebAPIKey" HorizontalAlignment="Left" Margin="140,75,0,0" TextWrapping="NoWrap" Text="{Binding SteamWebAPIKey}" VerticalAlignment="Top" Width="312" MaxLines="1"/>
         </Grid>
 
-        <CheckBox x:Name="GenerateEMUConfig" Content="{I18N {x:Static steamAutoCrack:LangKeys._2GenerateGoldbergSteamEmulatorConfiguration}}" HorizontalAlignment="Left" Margin="10,195,0,0" VerticalAlignment="Top" IsChecked="{Binding GenerateEMUConfig}"/>
-        <Grid x:Name="GenerateEMUConfigGrid" Margin="10,150,0,260" Height="130" Width="480" >
-            <Rectangle HorizontalAlignment="Left" Height="130" Stroke="Black" VerticalAlignment="Top" Width="300"/>
+        <CheckBox x:Name="GenerateEMUConfig" Content="{I18N {x:Static steamAutoCrack:LangKeys._2GenerateGoldbergSteamEmulatorConfiguration}}" HorizontalAlignment="Left" Margin="13,250,0,0" VerticalAlignment="Top" IsChecked="{Binding GenerateEMUConfig}"/>
+        <Grid x:Name="GenerateEMUConfigGrid" Margin="10,280,0,0" Height="220" Width="535" VerticalAlignment="Top">
+            <Rectangle HorizontalAlignment="Left" Height="220" Stroke="Black" VerticalAlignment="Top" Width="325"/>
             <Border BorderBrush="Black" BorderThickness="1"/>
 
-            <TextBlock HorizontalAlignment="Left" Margin="10,5,0,0" TextWrapping="Wrap" Text="{I18N {x:Static steamAutoCrack:LangKeys.Language}}" VerticalAlignment="Top"/>
-            <ComboBox x:Name="Language" HorizontalAlignment="Left" Margin="105,5,0,0" VerticalAlignment="Top" Width="130" ItemsSource="{Binding Languages}" SelectedItem="{Binding Language}"/>
+            <TextBlock HorizontalAlignment="Left" Margin="5,12,0,0" TextWrapping="Wrap" Text="{I18N {x:Static steamAutoCrack:LangKeys.Language}}" VerticalAlignment="Top"/>
+            <ComboBox x:Name="Language" HorizontalAlignment="Left" Margin="135,5,0,0" VerticalAlignment="Top" Width="180" ItemsSource="{Binding Languages}" SelectedItem="{Binding Language}"/>
 
-            <TextBlock HorizontalAlignment="Left" Margin="10,30,0,0" TextWrapping="Wrap" Text="{I18N {x:Static steamAutoCrack:LangKeys.ListenPort}}" VerticalAlignment="Top"/>
-            <TextBox x:Name="ListenPort" HorizontalAlignment="Left" Margin="105,30,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="130" MaxLength="5" PreviewTextInput="ListenPort_PreviewTextInput" DataObject.Pasting="ListenPort_Pasting" Text="{Binding ListenPort}"/>
+            <TextBlock HorizontalAlignment="Left" Margin="5,47,0,0" TextWrapping="Wrap" Text="{I18N {x:Static steamAutoCrack:LangKeys.ListenPort}}" VerticalAlignment="Top"/>
+            <TextBox x:Name="ListenPort" HorizontalAlignment="Left" Margin="135,40,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="180" MaxLength="5" PreviewTextInput="ListenPort_PreviewTextInput" DataObject.Pasting="ListenPort_Pasting" Text="{Binding ListenPort}"/>
 
-            <TextBlock HorizontalAlignment="Left" Margin="10,55,0,0" TextWrapping="Wrap" Text="{I18N {x:Static steamAutoCrack:LangKeys.AccountName}}" VerticalAlignment="Top"/>
-            <TextBox x:Name="AccountName" HorizontalAlignment="Left" Margin="105,55,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="130" Text="{Binding AccountName}"/>
+            <TextBlock HorizontalAlignment="Left" Margin="5,82,0,0" TextWrapping="Wrap" Text="{I18N {x:Static steamAutoCrack:LangKeys.AccountName}}" VerticalAlignment="Top"/>
+            <TextBox x:Name="AccountName" HorizontalAlignment="Left" Margin="135,75,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="180" Text="{Binding AccountName}"/>
 
-            <TextBlock HorizontalAlignment="Left" Margin="10,80,0,0" TextWrapping="Wrap" Text="{I18N {x:Static steamAutoCrack:LangKeys.SteamID}}" VerticalAlignment="Top"/>
-            <TextBox x:Name="SteamID" HorizontalAlignment="Left" Margin="105,80,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="130" MaxLength="17" PreviewTextInput="SteamID_PreviewTextInput" DataObject.Pasting="SteamID_Pasting" Text="{Binding SteamID}"/>
+            <TextBlock HorizontalAlignment="Left" Margin="5,117,0,0" TextWrapping="Wrap" Text="{I18N {x:Static steamAutoCrack:LangKeys.SteamID}}" VerticalAlignment="Top"/>
+            <TextBox x:Name="SteamID" HorizontalAlignment="Left" Margin="135,110,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="180" MaxLength="17" PreviewTextInput="SteamID_PreviewTextInput" DataObject.Pasting="SteamID_Pasting" Text="{Binding SteamID}"/>
 
-            <TextBox x:Name="CustomIP" HorizontalAlignment="Center" Margin="0,105,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="105" Text="{Binding CustomIP}"/>
-            <CheckBox x:Name="UseCustomIP" Content="{I18N {x:Static steamAutoCrack:LangKeys.UseCustomBroadcastIP}}" HorizontalAlignment="Left" Margin="10,105,0,0" VerticalAlignment="Top" IsChecked="{Binding UseCustomIP}"/>
+            <TextBlock HorizontalAlignment="Left" Margin="5,152,0,0" Text="{I18N {x:Static steamAutoCrack:LangKeys.Ticket}}" VerticalAlignment="Top"/>
+            <TextBox x:Name="Ticket" HorizontalAlignment="Left" Margin="60,145,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="255" Text="{Binding Ticket}"/>
 
-            <CheckBox x:Name="DisableNetworking" Content="{I18N {x:Static steamAutoCrack:LangKeys.DisableNetworking}}" HorizontalAlignment="Left" Margin="305,5,0,0" VerticalAlignment="Top" Width="165" IsChecked="{Binding DisableNetworking}"/>
-            <CheckBox x:Name="Offline" Content="{I18N {x:Static steamAutoCrack:LangKeys.OfflineMode}}" HorizontalAlignment="Left" Margin="305,30,0,0" VerticalAlignment="Top" Width="165" IsChecked="{Binding Offline}"/>
-            <CheckBox x:Name="EnableOverlay" Content="{I18N {x:Static steamAutoCrack:LangKeys.EnableOverlay}}" HorizontalAlignment="Left" Margin="305,55,0,0" VerticalAlignment="Top" Width="165" IsChecked="{Binding EnableOverlay}"/>
-            <Button x:Name="OpenExample" Content="{I18N {x:Static steamAutoCrack:LangKeys.OpenExampleConfig}}" HorizontalAlignment="Left" Margin="305,80,0,0" VerticalAlignment="Top" Width="140" Click="OpenExample_Click"/>
-            <Button x:Name="OpenConfigFolder" Content="{I18N {x:Static steamAutoCrack:LangKeys.OpenConfigFolder}}" HorizontalAlignment="Left" Margin="305,105,0,0" VerticalAlignment="Top" Width="140" Click="OpenConfigFolder_Click"/>
+            <TextBox x:Name="CustomIP" HorizontalAlignment="Left" Margin="185,180,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="130" Text="{Binding CustomIP}"/>
+            <CheckBox x:Name="UseCustomIP" Content="{I18N {x:Static steamAutoCrack:LangKeys.UseCustomBroadcastIP}}" HorizontalAlignment="Left" Margin="5,180,0,0" VerticalAlignment="Top" IsChecked="{Binding UseCustomIP}"/>
+
+            <CheckBox x:Name="DisableNetworking" Content="{I18N {x:Static steamAutoCrack:LangKeys.DisableNetworking}}" HorizontalAlignment="Left" Margin="330,5,0,0" VerticalAlignment="Top" Width="165" IsChecked="{Binding DisableNetworking}"/>
+            <CheckBox x:Name="Offline" Content="{I18N {x:Static steamAutoCrack:LangKeys.OfflineMode}}" HorizontalAlignment="Left" Margin="330,30,0,0" VerticalAlignment="Top" Width="165" IsChecked="{Binding Offline}"/>
+            <CheckBox x:Name="EnableOverlay" Content="{I18N {x:Static steamAutoCrack:LangKeys.EnableOverlay}}" HorizontalAlignment="Left" Margin="330,55,0,0" VerticalAlignment="Top" Width="165" IsChecked="{Binding EnableOverlay}"/>
+            <Button x:Name="OpenExample" Content="{I18N {x:Static steamAutoCrack:LangKeys.OpenExampleConfig}}" HorizontalAlignment="Left" Margin="330,145,0,0" VerticalAlignment="Top" Width="150" Click="OpenExample_Click"/>
+            <Button x:Name="OpenConfigFolder" Content="{I18N {x:Static steamAutoCrack:LangKeys.OpenConfigFolder}}" HorizontalAlignment="Left" Margin="330,180,0,0" VerticalAlignment="Top" Width="150" Click="OpenConfigFolder_Click"/>
 
         </Grid>
 
-        <CheckBox x:Name="Unpack" Content="{I18N {x:Static steamAutoCrack:LangKeys._3UnpackSteamStub}}" HorizontalAlignment="Left" Margin="10,345,0,0" VerticalAlignment="Top" IsChecked="{Binding Unpack}"/>
-        <Grid x:Name="UnpackGrid" Margin="10,165,0,10" Height="95" Width="480">
+        <CheckBox x:Name="Unpack" Content="{I18N {x:Static steamAutoCrack:LangKeys._3UnpackSteamStub}}" HorizontalAlignment="Left" Margin="13,500,0,0" VerticalAlignment="Top" IsChecked="{Binding Unpack}"/>
+        <Grid x:Name="UnpackGrid" Margin="10,530,0,0" Height="125" Width="535" VerticalAlignment="Top">
             <Border BorderBrush="Black" BorderThickness="1"/>
-            <CheckBox x:Name="KeepBind" Content="{I18N {x:Static steamAutoCrack:LangKeys.KeepBindSection}}" HorizontalAlignment="Left" Margin="10,5,0,0" VerticalAlignment="Top" IsChecked="{Binding KeepBind}"/>
-            <CheckBox x:Name="KeepStub" Content="{I18N {x:Static steamAutoCrack:LangKeys.KeepDOSStubData}}" HorizontalAlignment="Left" Margin="10,25,0,0" VerticalAlignment="Top" IsChecked="{Binding KeepStub}"/>
-            <CheckBox x:Name="Realign" Content="{I18N {x:Static steamAutoCrack:LangKeys.RealignSections}}" HorizontalAlignment="Left" Margin="360,5,0,0" VerticalAlignment="Top" IsChecked="{Binding Realign}"/>
+            <CheckBox x:Name="KeepBind" Content="{I18N {x:Static steamAutoCrack:LangKeys.KeepBindSection}}" HorizontalAlignment="Left" Margin="5,0,0,0" VerticalAlignment="Top" IsChecked="{Binding KeepBind}"/>
+            <CheckBox x:Name="KeepStub" Content="{I18N {x:Static steamAutoCrack:LangKeys.KeepDOSStubData}}" HorizontalAlignment="Left" Margin="5,25,0,0" VerticalAlignment="Top" IsChecked="{Binding KeepStub}"/>
+            <CheckBox x:Name="Realign" Content="{I18N {x:Static steamAutoCrack:LangKeys.RealignSections}}" HorizontalAlignment="Left" Margin="360,0,0,0" VerticalAlignment="Top" IsChecked="{Binding Realign}"/>
             <CheckBox x:Name="ReCalcChecksum" Content="{I18N {x:Static steamAutoCrack:LangKeys.RecalculateFileChecksum}}" HorizontalAlignment="Left" Margin="175,25,0,0" VerticalAlignment="Top" IsChecked="{Binding ReCalcChecksum}"/>
-            <CheckBox x:Name="UseExperimentalFeatures" Content="{I18N {x:Static steamAutoCrack:LangKeys.UseExperimentalFeatures}}" HorizontalAlignment="Left" Margin="175,5,0,0" VerticalAlignment="Top" IsChecked="{Binding UseExperimentalFeatures}"/>
-            <TextBlock HorizontalAlignment="Left" Margin="10,47,0,0" TextWrapping="Wrap" Text="{I18N {x:Static steamAutoCrack:LangKeys.SteamAPICheckBypassMode}}" VerticalAlignment="Top"/>
-            <ComboBox x:Name="SteamAPICheckBypassMode" HorizontalAlignment="Left" Margin="182,45,0,0" VerticalAlignment="Top" Width="150" ItemsSource="{Binding SteamAPICheckBypassModes}" SelectedItem="{Binding SteamAPICheckBypassMode}" SelectionChanged="SteamAPICheckBypassMode_SelectionChanged">
+            <CheckBox x:Name="UseExperimentalFeatures" Content="{I18N {x:Static steamAutoCrack:LangKeys.UseExperimentalFeatures}}" HorizontalAlignment="Left" Margin="175,0,0,0" VerticalAlignment="Top" IsChecked="{Binding UseExperimentalFeatures}"/>
+            <TextBlock HorizontalAlignment="Left" Margin="10,62,0,0" TextWrapping="Wrap" Text="{I18N {x:Static steamAutoCrack:LangKeys.SteamAPICheckBypassMode}}" VerticalAlignment="Top"/>
+            <ComboBox x:Name="SteamAPICheckBypassMode" HorizontalAlignment="Left" Margin="182,55,0,0" VerticalAlignment="Top" Width="150" ItemsSource="{Binding SteamAPICheckBypassModes}" SelectedItem="{Binding SteamAPICheckBypassMode}" SelectionChanged="SteamAPICheckBypassMode_SelectionChanged">
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding Converter={StaticResource enumConverter}}"/>
                     </DataTemplate>
                 </ComboBox.ItemTemplate>
             </ComboBox>
-            <TextBlock HorizontalAlignment="Left" Margin="340,47,0,0" TextWrapping="Wrap" Text="{I18N {x:Static steamAutoCrack:LangKeys.NthTime}}" VerticalAlignment="Top"/>
-            <TextBox x:Name="SteamAPICheckBypassNthTime" HorizontalAlignment="Left" Margin="400,47,0,0" TextWrapping="NoWrap" Text="{Binding SteamAPICheckBypassNthTime}" VerticalAlignment="Top" Width="70" MaxLines="1"/>
-            <TextBlock HorizontalAlignment="Left" Margin="10,70,0,0" TextWrapping="Wrap" Text="{I18N {x:Static steamAutoCrack:LangKeys.SteamAPICheckBypassDLL}}" VerticalAlignment="Top"/>
-            <ComboBox x:Name="SteamAPICheckBypassDLL" HorizontalAlignment="Left" Margin="182,70,0,0" VerticalAlignment="Top" Width="150" ItemsSource="{Binding SteamAPICheckBypassDLLs}" SelectedItem="{Binding SteamAPICheckBypassDLL}" SelectionChanged="SteamAPICheckBypassMode_SelectionChanged">
+            <TextBlock HorizontalAlignment="Left" Margin="340,62,0,0" TextWrapping="Wrap" Text="{I18N {x:Static steamAutoCrack:LangKeys.NthTime}}" VerticalAlignment="Top"/>
+            <TextBox x:Name="SteamAPICheckBypassNthTime" HorizontalAlignment="Left" Margin="400,55,0,0" TextWrapping="NoWrap" Text="{Binding SteamAPICheckBypassNthTime}" VerticalAlignment="Top" Width="70" MaxLines="1"/>
+            <TextBlock HorizontalAlignment="Left" Margin="10,97,0,0" TextWrapping="Wrap" Text="{I18N {x:Static steamAutoCrack:LangKeys.SteamAPICheckBypassDLL}}" VerticalAlignment="Top"/>
+            <ComboBox x:Name="SteamAPICheckBypassDLL" HorizontalAlignment="Left" Margin="182,90,0,0" VerticalAlignment="Top" Width="150" ItemsSource="{Binding SteamAPICheckBypassDLLs}" SelectedItem="{Binding SteamAPICheckBypassDLL}" SelectionChanged="SteamAPICheckBypassMode_SelectionChanged">
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding Converter={StaticResource enumConverter}}"/>
@@ -134,29 +143,29 @@
             </ComboBox>
         </Grid>
 
-        <CheckBox x:Name="ApplyEMU" Content="{I18N {x:Static steamAutoCrack:LangKeys._4ApplyGoldbergSteamEmulator}}" HorizontalAlignment="Left" Margin="10,460,0,0" VerticalAlignment="Top" IsChecked="{Binding ApplyEMU}"/>
-        <Grid x:Name="ApplyEMUGrid" Margin="10,395,0,40" Height="65" Width="480">
+        <CheckBox x:Name="ApplyEMU" Content="{I18N {x:Static steamAutoCrack:LangKeys._4ApplyGoldbergSteamEmulator}}" HorizontalAlignment="Left" Margin="13,655,0,0" VerticalAlignment="Top" IsChecked="{Binding ApplyEMU}"/>
+        <Grid x:Name="ApplyEMUGrid" Margin="10,685,0,40" Height="95" Width="535" VerticalAlignment="Top">
             <Border BorderBrush="Black" BorderThickness="1"/>
 
-            <CheckBox x:Name="UseLocalSave" Content="{I18N {x:Static steamAutoCrack:LangKeys.UseCustomSaveLocation}}" HorizontalAlignment="Left" Margin="10,5,0,0" VerticalAlignment="Top" IsChecked="{Binding UseLocalSave}"/>
-            <TextBox HorizontalAlignment="Left" Margin="190,5,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="285" Text="{Binding LocalSave}"/>
+            <CheckBox x:Name="UseLocalSave" Content="{I18N {x:Static steamAutoCrack:LangKeys.UseCustomSaveLocation}}" HorizontalAlignment="Left" Margin="5,5,0,0" VerticalAlignment="Top" IsChecked="{Binding UseLocalSave}"/>
+            <TextBox HorizontalAlignment="Left" Margin="200,5,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="285" Text="{Binding LocalSave}"/>
 
-            <CheckBox x:Name="UseGoldbergExperimental" Content="{I18N {x:Static steamAutoCrack:LangKeys.UseExperimentalVersionGoldbergEmulator}}" HorizontalAlignment="Left" Margin="10,25,0,0" VerticalAlignment="Top" IsChecked="{Binding UseGoldbergExperimental}"/>
-            <CheckBox x:Name="GenerateInterfacesFile" Content="{I18N {x:Static steamAutoCrack:LangKeys.GenerateSteamInterfacesFile}}" HorizontalAlignment="Left" Margin="10,45,0,0" VerticalAlignment="Top" IsChecked="{Binding GenerateInterfacesFile}"/>
-            <CheckBox x:Name="ForceGenerateInterfacesFiles" Content="{I18N {x:Static steamAutoCrack:LangKeys.ForceGenerateForEachSteam__api64Dll}}" HorizontalAlignment="Left" Margin="215,45,0,0" VerticalAlignment="Top" IsChecked="{Binding ForceGenerateInterfacesFiles}"/>
+            <CheckBox x:Name="UseGoldbergExperimental" Content="{I18N {x:Static steamAutoCrack:LangKeys.UseExperimentalVersionGoldbergEmulator}}" HorizontalAlignment="Left" Margin="5,35,0,0" VerticalAlignment="Top" IsChecked="{Binding UseGoldbergExperimental}"/>
+            <CheckBox x:Name="GenerateInterfacesFile" Content="{I18N {x:Static steamAutoCrack:LangKeys.GenerateSteamInterfacesFile}}" HorizontalAlignment="Left" Margin="5,60,0,0" VerticalAlignment="Top" IsChecked="{Binding GenerateInterfacesFile}"/>
+            <CheckBox x:Name="ForceGenerateInterfacesFiles" Content="{I18N {x:Static steamAutoCrack:LangKeys.ForceGenerateForEachSteam__api64Dll}}" HorizontalAlignment="Left" Margin="215,60,0,0" VerticalAlignment="Top" IsChecked="{Binding ForceGenerateInterfacesFiles}"/>
         </Grid>
 
-        <CheckBox x:Name="GenerateCrackOnly" Content="{I18N {x:Static steamAutoCrack:LangKeys._5GenerateCrackOnlyFiles}}" HorizontalAlignment="Left" Margin="10,545,0,0" VerticalAlignment="Top" IsChecked="{Binding GenerateCrackOnly}"/>
-        <Grid x:Name="GenerateCrackOnlyGrid" Margin="10,515,0,10" Height="45" Width="480">
+        <CheckBox x:Name="GenerateCrackOnly" Content="{I18N {x:Static steamAutoCrack:LangKeys._5GenerateCrackOnlyFiles}}" HorizontalAlignment="Left" Margin="13,780,0,0" VerticalAlignment="Top" IsChecked="{Binding GenerateCrackOnly}"/>
+        <Grid x:Name="GenerateCrackOnlyGrid" Margin="10,810,0,0" Height="65" Width="535" VerticalAlignment="Top">
             <Border BorderBrush="Black" BorderThickness="1"/>
-            <TextBlock HorizontalAlignment="Left" Margin="10,5,0,0" TextWrapping="Wrap" Text="{I18N {x:Static steamAutoCrack:LangKeys.OutputPath}}" VerticalAlignment="Top"/>
+            <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="{I18N {x:Static steamAutoCrack:LangKeys.OutputPath}}" VerticalAlignment="Top"/>
             <TextBox x:Name="textBox" HorizontalAlignment="Left" Margin="93,4,0,0" TextWrapping="NoWrap" Text="{Binding OutputPath}" VerticalAlignment="Top" Width="349"/>
 
-            <CheckBox x:Name="CreateReadme" Content="{I18N {x:Static steamAutoCrack:LangKeys.CreateCrackReadmeFile}}" HorizontalAlignment="Left" Margin="10,26,0,0" VerticalAlignment="Top" IsChecked="{Binding CreateReadme}"/>
-            <CheckBox x:Name="Pack" Content="{I18N {x:Static steamAutoCrack:LangKeys.PackFileWithZipArchive}}" HorizontalAlignment="Left" Margin="223,26,0,0" VerticalAlignment="Top" IsChecked="{Binding Pack}"/>
+            <CheckBox x:Name="CreateReadme" Content="{I18N {x:Static steamAutoCrack:LangKeys.CreateCrackReadmeFile}}" HorizontalAlignment="Left" Margin="10,35,0,0" VerticalAlignment="Top" IsChecked="{Binding CreateReadme}"/>
+            <CheckBox x:Name="Pack" Content="{I18N {x:Static steamAutoCrack:LangKeys.PackFileWithZipArchive}}" HorizontalAlignment="Left" Margin="223,35,0,0" VerticalAlignment="Top" IsChecked="{Binding Pack}"/>
             <Button x:Name="SelectOutpath" Content="..." HorizontalAlignment="Left" Margin="450,4,0,0" VerticalAlignment="Top" Width="25" Height="17" Click="SelectOutpath_Click"/>
         </Grid>
 
-        <CheckBox x:Name="Restore" Content="{I18N {x:Static steamAutoCrack:LangKeys._6RestoreCrack}}" HorizontalAlignment="Left" Margin="10,610,0,0" VerticalAlignment="Top" IsChecked="{Binding Restore}" Checked="Restore_Checked" Unchecked="Restore_Unchecked"/>
+        <CheckBox x:Name="Restore" Content="{I18N {x:Static steamAutoCrack:LangKeys._6RestoreCrack}}" HorizontalAlignment="Left" Margin="13,875,0,0" VerticalAlignment="Top" IsChecked="{Binding Restore}" Checked="Restore_Checked" Unchecked="Restore_Unchecked"/>
     </Grid>
 </Window>

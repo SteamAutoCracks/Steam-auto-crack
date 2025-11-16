@@ -228,7 +228,7 @@ namespace SteamAutoCrack.Core.Utils
             }
             catch (Exception ex)
             {
-                _log.Error(ex, "Failed to get current Goldberg Steam emulator version.");
+                _log.Warning(ex, "Failed to get current Goldberg Steam emulator version.");
                 return string.Empty;
             }
         }

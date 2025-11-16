@@ -52,7 +52,7 @@ public class ListViewSink : ILogEventSink
             if (logEvent.RenderMessage() != string.Empty)
             {
                 var item = new { Level = level, Source = SourceContextStr, Message = logEvent.RenderMessage() };
-                var listviewitem = new ListViewItem { Content = item, Background = logColor };
+                var listviewitem = new ListViewItem { Content = item, Background = logColor, Foreground = Brushes.Black};
                 _ListView.Items.Add(listviewitem);
                 _ListView.ScrollIntoView(listviewitem);
             }
@@ -60,7 +60,7 @@ public class ListViewSink : ILogEventSink
             if (logEvent.Exception != null)
             {
                 var itemex = new { Level = level, Source = SourceContextStr, logEvent.Exception.Message };
-                var listviewitemex = new ListViewItem { Content = itemex, Background = logColor };
+                var listviewitemex = new ListViewItem { Content = itemex, Background = logColor, Foreground = Brushes.Black };
                 _ListView.Items.Add(listviewitemex);
                 _ListView.ScrollIntoView(listviewitemex);
             }

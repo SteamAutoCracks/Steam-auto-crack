@@ -24,22 +24,27 @@ internal class Program
             .CreateLogger();
         levelSwitch.MinimumLevel = LogEventLevel.Information;
         var _log = Log.ForContext<Program>();
-        var DebugOption = new Option<bool>(
+        Option<bool> DebugOption = new Option<bool>(
             "--debug",
             "Enable Debug Log.");
 
         #region crack
 
-        var ConfigOption = new Option<FileInfo?>(
-            "--config",
-            "The process config json file. [Default: config.json in program current running directory]");
+        Option<FileInfo?> ConfigOption = new("--config")
+        {
+            Description = "The process config json file. [Default: config.json in program current running directory]",
+            DefaultValueFactory = parseResult => new FileInfo(Config.ConfigPath)
+        };
 
-        var AppIDOption = new Option<string>(
-            "--appid",
-            "The game Steam AppID. (Required when Generate Goldberg Steam emulator game info)");
+        Option<string> AppIDOption = new("--appid")
+        {
+            Description = "The game Steam AppID. (Required when Generate Goldberg Steam emulator game info)"
+        };
 
-        var pathArgument = new Argument<string>
-            ("Path", "Input Path.");
+        Argument<string> pathArgument = new("Path")
+        {
+            Description = "Input Path."
+        };
 
         var crackCommand = new Command("crack", "Start crack process.")
         {
@@ -48,17 +53,17 @@ internal class Program
             AppIDOption
         };
 
-        crackCommand.SetHandler(async (InputPath, ConfigPath, AppID, Debug) =>
+        crackCommand.SetAction(async (parseResult) =>
         {
-            if (Debug) SetDebugLogLevel(levelSwitch);
-            await Process(InputPath, ConfigPath, AppID);
-        }, pathArgument, ConfigOption, AppIDOption, DebugOption);
+            if (parseResult.GetValue(DebugOption)) SetDebugLogLevel(levelSwitch);
+            await Process(parseResult.GetValue(pathArgument), parseResult.GetValue(ConfigOption), parseResult.GetValue(AppIDOption));
+        });
 
         #endregion
 
         #region downloademu
 
-        var ForceDownloadOption = new Option<bool>(
+        Option<bool> ForceDownloadOption = new Option<bool>(
             "--force",
             "Force (re)download."
         );
@@ -68,14 +73,14 @@ internal class Program
             ForceDownloadOption
         };
 
-        downloademuCommand.SetHandler(async (Force, Debug) =>
+        downloademuCommand.SetAction(async (parseResult) =>
         {
             try
             {
-                if (Debug) SetDebugLogLevel(levelSwitch);
+                if (parseResult.GetValue(DebugOption)) SetDebugLogLevel(levelSwitch);
                 var updater = new EMUUpdater();
                 await updater.Init();
-                await updater.Download(Force);
+                await updater.Download(parseResult.GetValue(ForceDownloadOption));
                 _log.Information("Updated Goldberg Steam emulator.");
             }
             catch (Exception ex)
@@ -83,18 +88,18 @@ internal class Program
                 var _log = Log.ForContext<Program>();
                 _log.Error(ex, "Error to Update Steam App List.");
             }
-        }, ForceDownloadOption, DebugOption);
+        });
 
         #endregion
 
         #region updateapplist
 
         var updateapplistCommand = new Command("updateapplist", "Force Update Steam App List.");
-        updateapplistCommand.SetHandler(async Debug =>
+        updateapplistCommand.SetAction(async (parseResult) =>
         {
             try
             {
-                if (Debug) SetDebugLogLevel(levelSwitch);
+                if (parseResult.GetValue(DebugOption)) SetDebugLogLevel(levelSwitch);
                 await SteamAppList.Initialize(true).ConfigureAwait(false);
                 _log.Information("Steam App List Updated.");
             }
@@ -103,13 +108,13 @@ internal class Program
                 var _log = Log.ForContext<Program>();
                 _log.Error(ex, "Error to Update Steam App List.");
             }
-        }, DebugOption);
+        });
 
         #endregion
 
         #region createconfig
 
-        var configpathOption = new Option<FileInfo?>(
+        Option<FileInfo?> configpathOption = new Option<FileInfo?>(
             "--path",
             "Changes default config path.");
         var createconfigCommand = new Command("createconfig", "Create Default Config File.")
@@ -117,29 +122,29 @@ internal class Program
             configpathOption
         };
 
-        createconfigCommand.SetHandler((ConfigPath, Debug) =>
+        createconfigCommand.SetAction(async (parseResult) =>
+        {
+            try
             {
-                try
+                if (parseResult.GetValue(DebugOption)) SetDebugLogLevel(levelSwitch);
+                var ConfigPath = parseResult.GetValue(configpathOption);
+                Config.ConfigPath = ConfigPath == null ? Config.ConfigPath : ConfigPath.FullName;
+                if (File.Exists(Config.ConfigPath))
                 {
-                    if (Debug) SetDebugLogLevel(levelSwitch);
-                    Config.ConfigPath = ConfigPath == null ? Config.ConfigPath : ConfigPath.FullName;
-                    if (File.Exists(Config.ConfigPath))
-                    {
-                        _log.Information("Config file already exists.");
-                        return;
-                    }
+                    _log.Information("Config file already exists.");
+                    return;
+                }
 
-                    Config.ResettoDefaultConfigs();
-                    Config.SaveConfig();
-                    _log.Information("Config Created.");
-                }
-                catch (Exception ex)
-                {
-                    var _log = Log.ForContext<Program>();
-                    _log.Error(ex, "Error to Create Config.");
-                }
-            },
-            configpathOption, DebugOption);
+                Config.ResettoDefaultConfigs();
+                Config.SaveConfig();
+                _log.Information("Config Created.");
+            }
+            catch (Exception ex)
+            {
+                var _log = Log.ForContext<Program>();
+                _log.Error(ex, "Error to Create Config.");
+            }
+        });
 
         #endregion
 
@@ -154,11 +159,11 @@ internal class Program
             createconfigCommand
         };
 
-        rootCommand.AddGlobalOption(DebugOption);
+        rootCommand.Options.Add(DebugOption);
 
         #endregion
 
-        return await rootCommand.InvokeAsync(args);
+        return await rootCommand.Parse(args).InvokeAsync();
     }
 
     private static async Task Process(string InputPath, FileInfo ConfigPath, string AppID)

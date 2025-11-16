@@ -349,6 +349,20 @@ internal class MainWindowViewModel : INotifyPropertyChanged
         }
     }
 
+    public string Ticket
+    {
+        get => Config.EMUConfigs.Ticket;
+
+        set
+        {
+            if (value != Config.EMUConfigs.Ticket)
+            {
+                Config.EMUConfigs.Ticket = value;
+                NotifyPropertyChanged();
+            }
+        }
+    }
+
     public bool DisableNetworking
     {
         get => Config.EMUConfigs.DisableNetworking;

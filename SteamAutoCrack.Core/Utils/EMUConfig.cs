@@ -78,6 +78,11 @@ public class EMUConfig
     public bool UseCustomIP { get; set; } = false;
 
     /// <summary>
+    ///   Encrypted Application Ticket.
+    /// </summary>
+    public string Ticket { get; set; } = String.Empty;
+
+    /// <summary>
     ///     Disable all the networking functionality of the Steam emulator.
     /// </summary>
     public bool DisableNetworking { get; set; } = false;
@@ -170,6 +175,11 @@ public class EMUConfig
         ///     Generate custom_broadcasts.txt
         /// </summary>
         public static readonly bool UseCustomIP = false;
+
+        /// <summary>
+        ///   Encrypted Application Ticket.
+        ///
+        public static readonly string Ticket = String.Empty;
 
         /// <summary>
         ///     Disable all the networking functionality of the Steam emulator.
@@ -357,8 +367,16 @@ public class EMUConfigGenerator : IEMUConfigGenerator
                 new("language", EMUConfig.Language.ToString(), " the language reported to the app/game",
                     " this must exist in 'supported_languages.txt', otherwise it will be ignored by the emu",
                     " look for the column 'API language code' here: https://partner.steamgames.com/doc/store/localization/languages",
-                    " default=english")
+                    " default=english"),
             });
+
+            if (EMUConfig.Ticket != EMUConfig.DefaultConfig.Ticket)
+            {
+                // add to user::general ticket
+                configsuser["user::general"].Add(new("ticket", EMUConfig.Ticket,
+                    " the encrypted application ticket in base64 format",
+                    " default=none"));
+            }
 
             configsmain.Add(new Section("main::connectivity")
                 {

@@ -11,6 +11,13 @@
     <Window.DataContext>
         <viewmodels:AboutViewModel/>
     </Window.DataContext>
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/PresentationFramework.Fluent;component/Themes/Fluent.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
     <Grid>
         <Button x:Name="Close" Content="{I18N {x:Static steamAutoCrack:LangKeys.Close}}" HorizontalAlignment="Center" Margin="0,324,0,0" VerticalAlignment="Top" Click="Close_Click" Width="60" IsDefault="True"/>
         <TextBlock x:Name="SteamAutoCrack" HorizontalAlignment="Left" Margin="110,10,0,0" TextWrapping="Wrap" Text="{Binding Ver}" VerticalAlignment="Top" Height="35" Width="235" FontSize="20"/>
@@ -31,7 +38,5 @@
                 Gitlab
                 </Hyperlink>
         </TextBlock>
-
-
     </Grid>
 </Window>

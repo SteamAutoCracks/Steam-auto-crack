@@ -54,6 +54,11 @@ public class SteamStubUnpackerConfig
     public bool UseExperimentalFeatures { get; set; } = false;
 
     /// <summary>
+    /// Temp steam_settings folder path
+    /// </summary>
+    public string SteamsettingsPath { get; set; } = Path.Combine(Config.Config.TempPath, "steam_settings");
+
+    /// <summary>
     ///     SteamAPICheckBypass Mode
     /// </summary>
     public SteamAPICheckBypassModes SteamAPICheckBypassMode { get; set; } = SteamAPICheckBypassModes.Disabled;
@@ -94,6 +99,11 @@ public class SteamStubUnpackerConfig
         ///     Use Experimental Features.
         /// </summary>
         public static readonly bool UseExperimentalFeatures = false;
+
+        /// <summary>
+        /// Temp steam_settings folder path
+        /// </summary>
+        public static readonly string SteamsettingsPath = Path.Combine(Config.Config.TempPath, "steam_settings");
 
         /// <summary>
         ///     SteamAPICheckBypass Mode
@@ -302,7 +312,30 @@ public class SteamStubUnpacker : ISteamStubUnpacker
                 "version.dll",
                 "winhttp.dll"
             };
-            foreach (var dirPath in pathsList)
+            var steamsettingsFiles = new List<string>
+            {
+                Path.Combine("steam_settings", "achievements.json"),
+                Path.Combine("steam_settings", "branches.json"),
+                Path.Combine("steam_settings", "configs.app.ini"),
+                Path.Combine("steam_settings", "configs.main.ini"),
+                Path.Combine("steam_settings", "configs.overlay.ini"),
+                Path.Combine("steam_settings", "configs.user.ini"),
+                Path.Combine("steam_settings", "default_items.json"),
+                Path.Combine("steam_settings", "items.json"),
+                Path.Combine("steam_settings", "stats.txt"),
+                Path.Combine("steam_settings", "steam_appid.txt"),
+                Path.Combine("steam_settings", "supported_languages.txt"),
+                Path.Combine("steam_settings", "achievement_images")
+            };
+
+            string mode = _SteamAPICheckBypassMode switch
+            {
+                SteamStubUnpackerConfig.SteamAPICheckBypassModes.OnlyN => "nth_time_only",
+                SteamStubUnpackerConfig.SteamAPICheckBypassModes.OnlyNotN => "not_nth_time_only",
+                _ => throw new InvalidOperationException("Invalid SteamAPICheckBypassMode")
+            };
+
+            foreach (var dirPath in pathsList.AsReadOnly())
             {
                 var fullPath = Path.Combine(dirPath, "SteamAPICheckBypass");
                 if (Directory.Exists(fullPath))
@@ -376,11 +409,27 @@ public class SteamStubUnpacker : ISteamStubUnpacker
                     .Select(p => Path.GetRelativePath(Path.GetDirectoryName(file) ?? String.Empty, p))).ToArray();
                 var steamsettingsPaths = apidlls
                     .Select(p => Path.Combine(Path.GetDirectoryName(p) ?? String.Empty, "steam_settings"));
+                var steamsettingsFilePaths = apidlls
+                    .SelectMany(p => steamsettingsFiles.Select(f => Path.Combine(Path.GetDirectoryName(p) ?? String.Empty, f)))
+                    .Distinct();
                 foreach (var steamsettingsPath in steamsettingsPaths)
+                {
                     jsonContent[steamsettingsPath] = new
                     {
                         mode = "file_hide"
                     };
+                }
+
+                foreach (var steamsettingsFilePath in steamsettingsFilePaths)
+                {
+                    jsonContent[steamsettingsFilePath] = new
+                    {
+                        mode = "file_hide",
+                        hook_times_mode = "not_nth_time_only",
+                        hook_time_n = "1"  // This value is estimated the game checks the config file after the emulator read it
+                    };
+                }
+
                 foreach (var apiDllPath in apidlls)
                     if (_SteamAPICheckBypassMode == SteamStubUnpackerConfig.SteamAPICheckBypassModes.All)
                         jsonContent[apiDllPath] = new
@@ -391,13 +440,6 @@ public class SteamStubUnpacker : ISteamStubUnpacker
                         };
                     else
                     {
-                        string mode = _SteamAPICheckBypassMode switch
-                        {
-                            SteamStubUnpackerConfig.SteamAPICheckBypassModes.OnlyN => "nth_time_only",
-                            SteamStubUnpackerConfig.SteamAPICheckBypassModes.OnlyNotN => "not_nth_time_only",
-                            _ => throw new InvalidOperationException("Invalid SteamAPICheckBypassMode")
-                        };
-
                         jsonContent[apiDllPath] = new
                         {
                             mode = "file_redirect",

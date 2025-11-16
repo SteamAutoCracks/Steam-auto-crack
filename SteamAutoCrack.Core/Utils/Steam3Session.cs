@@ -81,7 +81,7 @@ internal class Steam3Session
 
         var clientConfiguration = SteamConfiguration.Create(config =>
             config
-                .WithHttpClientFactory(HttpClientFactory.CreateHttpClient)
+                .WithHttpClientFactory(static purpose => HttpClientFactory.CreateHttpClient())
         );
 
         steamClient = new SteamClient(clientConfiguration);
