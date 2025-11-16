@@ -260,14 +260,14 @@ public class SteamAppList
         return listOfAppsByName;
     }
 
-    public static async Task<SteamApp> GetAppByName(string name)
+    public static async Task<SteamApp?> GetAppByName(string name)
     {
         _log?.Debug($"Trying to get app name for app: {name}");
         var app = await db!.Table<SteamApp>()
             .FirstOrDefaultAsync(x => x.Name != null && x.Name.Equals(name))
             .ConfigureAwait(false);
         if (app != null) _log?.Debug($"Successfully got app name for app: {app}");
-        return app!;
+        return app;
     }
 
     public static async Task<SteamApp> GetAppById(uint appid)
@@ -275,6 +275,14 @@ public class SteamAppList
         _log?.Debug($"Trying to get app with ID {appid}");
         var app = await db!.Table<SteamApp>().FirstOrDefaultAsync(x => x.AppId.Equals(appid)).ConfigureAwait(false);
         if (app != null) _log?.Debug($"Successfully got app {app}");
-        return app!;
+        else
+        {
+            return new SteamApp()
+            {
+                AppId = appid,
+                Name = null,
+            };
+        }
+        return app;
     }
 }
