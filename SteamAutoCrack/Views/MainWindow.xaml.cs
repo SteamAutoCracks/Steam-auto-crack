@@ -177,6 +177,11 @@ public partial class MainWindow
         if (Config.SaveCrackConfig) Config.LoadConfig();
         Thread.CurrentThread.CurrentUICulture = CultureInfo.CreateSpecificCulture(Config.GetLanguage());
         InitializeComponent();
+#pragma warning disable WPF0001
+        var useLightTheme = Registry.GetValue("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
+            "AppsUseLightTheme", true) as int?;
+        if (useLightTheme != null) ThemeMode = (useLightTheme == 1) ? ThemeMode.Light : ThemeMode.Dark;
+        else ThemeMode = ThemeMode.Light;
         if (Config.LogToFile)
             Log.Logger = new LoggerConfiguration()
                 .Enrich.WithProperty("SourceContext", null)

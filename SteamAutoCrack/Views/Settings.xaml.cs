@@ -1,9 +1,10 @@
-﻿using System.ComponentModel;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using Microsoft.Win32;
 using SteamAutoCrack.Core.Config;
 using SteamAutoCrack.Core.Utils;
 using SteamAutoCrack.ViewModels;
+using System.ComponentModel;
+using System.Threading.Tasks;
+using System.Windows;
 
 namespace SteamAutoCrack.Views;
 
@@ -21,6 +22,11 @@ public partial class Settings : Window
     public Settings()
     {
         InitializeComponent();
+#pragma warning disable WPF0001
+        var useLightTheme = Registry.GetValue("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
+            "AppsUseLightTheme", true) as int?;
+        if (useLightTheme != null) ThemeMode = (useLightTheme == 1) ? ThemeMode.Light : ThemeMode.Dark;
+        else ThemeMode = ThemeMode.Light;
         DataContext = viewModel;
     }
 

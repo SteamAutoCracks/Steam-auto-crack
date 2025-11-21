@@ -332,6 +332,7 @@ public class SteamStubUnpacker : ISteamStubUnpacker
             {
                 SteamStubUnpackerConfig.SteamAPICheckBypassModes.OnlyN => "nth_time_only",
                 SteamStubUnpackerConfig.SteamAPICheckBypassModes.OnlyNotN => "not_nth_time_only",
+                SteamStubUnpackerConfig.SteamAPICheckBypassModes.All => "all",
                 _ => throw new InvalidOperationException("Invalid SteamAPICheckBypassMode")
             };
 
