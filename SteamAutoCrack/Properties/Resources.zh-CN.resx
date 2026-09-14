@@ -147,8 +147,8 @@
   <data name="CreateCrackReadmeFile" xml:space="preserve">
     <value>创建破解说明文件</value>
   </data>
-  <data name="CurrentGoldbergSteamEmulatorCommitid" xml:space="preserve">
-    <value>当前 Goldberg 模拟器 commitid : </value>
+  <data name="CurrentGoldbergSteamEmulatorVersion" xml:space="preserve">
+    <value>当前 Goldberg 模拟器版本 : </value>
   </data>
   <data name="DisableNetworking" xml:space="preserve">
     <value>禁用网络</value>

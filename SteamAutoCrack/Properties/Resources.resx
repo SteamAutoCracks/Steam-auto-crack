@@ -147,8 +147,8 @@
   <data name="CreateCrackReadmeFile" xml:space="preserve">
     <value>Create Crack Readme File</value>
   </data>
-  <data name="CurrentGoldbergSteamEmulatorCommitid" xml:space="preserve">
-    <value>Current Goldberg commitid: </value>
+  <data name="CurrentGoldbergSteamEmulatorVersion" xml:space="preserve">
+    <value>Current Goldberg version: </value>
   </data>
   <data name="DisableNetworking" xml:space="preserve">
     <value>Disable Networking</value>

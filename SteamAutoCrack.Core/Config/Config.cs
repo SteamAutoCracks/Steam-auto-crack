@@ -142,9 +142,14 @@ public class Config
     {
         try
         {
-            var ver = File.ReadLines(Path.Combine(GoldbergPath, "commit_id")).First();
+            var versionFile = Path.Combine(GoldbergPath, "version");
+            if (!File.Exists(versionFile))
+            {
+                versionFile = Path.Combine(GoldbergPath, "commit_id");
+            }
+            var ver = File.ReadLines(versionFile).FirstOrDefault();
 
-            return ver;
+            return string.IsNullOrWhiteSpace(ver) ? "N/A" : ver;
         }
         catch (Exception ex)
         {

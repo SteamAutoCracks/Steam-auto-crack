@@ -1,4 +1,4 @@
-﻿<Window x:Class="SteamAutoCrack.Views.Settings"
+<Window x:Class="SteamAutoCrack.Views.Settings"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -33,7 +33,7 @@
         <Grid Margin="0,110,0,0" Height="90" Width="480" VerticalAlignment="Top">
             <Border BorderBrush="Black" BorderThickness="1"/>
             <Button x:Name="Download" HorizontalAlignment="Left" Margin="10,25,0,0" VerticalAlignment="Top" Click="Download_Click" Content="{I18N {x:Static steamAutoCrack:LangKeys.UpdateDownload}}" Width="200"/>
-            <TextBlock x:Name="GoldbergVersion" HorizontalAlignment="Left" Margin="10,5,0,0" TextWrapping="Wrap" Text="{I18N {x:Static steamAutoCrack:LangKeys.CurrentGoldbergSteamEmulatorCommitid}}" VerticalAlignment="Top"/>
+            <TextBlock x:Name="GoldbergVersion" HorizontalAlignment="Left" Margin="10,5,0,0" TextWrapping="Wrap" Text="{I18N {x:Static steamAutoCrack:LangKeys.CurrentGoldbergSteamEmulatorVersion}}" VerticalAlignment="Top"/>
             <TextBlock x:Name="GoldbergVersionStr" HorizontalAlignment="Left" Margin="200,5,0,0" TextWrapping="Wrap" Text="{Binding GoldbergVer}" VerticalAlignment="Top"/>
             <CheckBox x:Name="ForceUpdate" Content="{I18N {x:Static steamAutoCrack:LangKeys.ForceDownload}}" HorizontalAlignment="Left" Margin="230,23,0,0" VerticalAlignment="Top" IsChecked="{Binding ForceUpdate}"/>
             <Button x:Name="UpdateAppList" Content="{I18N {x:Static steamAutoCrack:LangKeys.ForceUpdateSteamAppList}}" HorizontalAlignment="Left" Margin="10,55,0,0" VerticalAlignment="Top" Click="UpdateAppList_Click" Width="200"/>
