@@ -1,5 +1,6 @@
 using System.IO;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Text.Json;
 using Serilog;
@@ -17,6 +18,11 @@ namespace SteamAutoCrack.Core.Utils
         private const string GoldbergAssetName = "emu-win-release-vs26.7z";
         public static bool Downloading;
         private readonly ILogger _log;
+
+        /// <summary>
+        ///     GitHub API Token for authentication.
+        /// </summary>
+        public string? GitHubToken { get; set; }
 
         private static readonly HttpClient _httpClient = new()
         {
@@ -39,9 +45,10 @@ namespace SteamAutoCrack.Core.Utils
         private long _expectedSize = 0;
         private string _expectedSha256 = string.Empty;
 
-        public EMUUpdater()
+        public EMUUpdater(string? gitHubToken = null)
         {
             _log = Log.ForContext<EMUUpdater>();
+            GitHubToken = gitHubToken ?? Config.Config.GitHubToken;
         }
 
         public async Task Init()
@@ -128,7 +135,26 @@ namespace SteamAutoCrack.Core.Utils
             try
             {
                 _log.Information("Fetching latest release info from GitHub...");
-                using var response = await _httpClient.GetAsync(GoldbergReleaseUrl).ConfigureAwait(false);
+                using var request = new HttpRequestMessage(HttpMethod.Get, GoldbergReleaseUrl);
+
+                var token = GitHubToken;
+                if (string.IsNullOrWhiteSpace(token))
+                {
+                    token = Config.Config.GitHubToken;
+                }
+
+                if (!string.IsNullOrWhiteSpace(token))
+                {
+                    token = token.Trim();
+                    if (token.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
+                    {
+                        token = token["Bearer ".Length..].Trim();
+                    }
+                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    _log.Debug("Using GitHub API token for authentication.");
+                }
+
+                using var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
 
                 if (!response.IsSuccessStatusCode)
                 {

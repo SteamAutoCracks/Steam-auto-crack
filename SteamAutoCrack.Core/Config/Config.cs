@@ -125,6 +125,12 @@ public class Config
     public static EMUGameInfoConfigs EMUGameInfoConfigs { get; set; } = new();
     public static GenCrackOnlyConfigs GenCrackOnlyConfigs { get; set; } = new();
     public static ProcessConfigs ProcessConfigs { get; set; } = new();
+
+    /// <summary>
+    ///     GitHub API Token for EMUUpdater.
+    /// </summary>
+    public static string GitHubToken { get; set; } = string.Empty;
+
     public static event LanguageChangedHandler? OnLanguageChanged;
 
     private static bool CheckConfigFile()
@@ -215,7 +221,8 @@ public class Config
         try
         {
             var jsonString = File.ReadAllText(ConfigPath);
-            var configs = JsonSerializer.Deserialize<Configs>(jsonString);
+            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+            var configs = JsonSerializer.Deserialize<Configs>(jsonString, options);
             if (configs != null)
             {
                 EMUApplyConfigs = configs.EMUApplyConfigs ?? EMUApplyConfigs;
@@ -227,6 +234,7 @@ public class Config
                 EnableDebugLog = configs.EnableDebugLog;
                 LogToFile = configs.LogToFile;
                 Language = configs.Language;
+                GitHubToken = !string.IsNullOrWhiteSpace(configs.GitHubToken) ? configs.GitHubToken.Trim() : string.Empty;
             }
 
             _log.Information("Config loaded.");
@@ -277,6 +285,12 @@ public class Configs
     public bool EnableDebugLog { get; set; }
     public bool LogToFile { get; set; }
     public Config.Languages Language { get; set; }
+
+    /// <summary>
+    ///     GitHub API Token for EMUUpdater.
+    /// </summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWriting)]
+    public string? GitHubToken { get; set; }
 }
 
 public class EMUApplyConfigs

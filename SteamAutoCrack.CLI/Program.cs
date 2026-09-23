@@ -1,4 +1,4 @@
-﻿using System.CommandLine;
+using System.CommandLine;
 using System.Reflection;
 using Serilog;
 using Serilog.Core;
@@ -79,6 +79,7 @@ internal class Program
             try
             {
                 if (parseResult.GetValue(DebugOption)) SetDebugLogLevel(levelSwitch);
+                if (File.Exists(Config.ConfigPath)) Config.LoadConfig();
                 var updater = new EMUUpdater();
                 await updater.Init();
                 await updater.Download(parseResult.GetValue(ForceDownloadOption));
