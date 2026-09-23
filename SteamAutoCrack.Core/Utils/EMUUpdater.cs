@@ -13,6 +13,8 @@ namespace SteamAutoCrack.Core.Utils
     public class EMUUpdater
     {
         private const string GoldbergReleaseUrl = "https://api.github.com/repos/Detanup01/gbe_fork/releases";
+
+        private const string GoldbergAssetName = "emu-win-release-vs26.7z";
         public static bool Downloading;
         private readonly ILogger _log;
 
@@ -159,7 +161,7 @@ namespace SteamAutoCrack.Core.Utils
                     foreach (var asset in assets.EnumerateArray())
                     {
                         var name = asset.GetProperty("name").GetString();
-                        if (string.Equals(name, "emu-win-release.7z", StringComparison.OrdinalIgnoreCase))
+                        if (string.Equals(name, GoldbergAssetName, StringComparison.OrdinalIgnoreCase))
                         {
                             _downloadUrl = asset.GetProperty("browser_download_url").GetString() ?? string.Empty;
                             _expectedSize = asset.GetProperty("size").GetInt64();
@@ -183,7 +185,7 @@ namespace SteamAutoCrack.Core.Utils
 
                 if (string.IsNullOrEmpty(_downloadUrl))
                 {
-                    _log.Error("Target asset 'emu-win-release.7z' not found in release.");
+                    _log.Error("Target asset '{AssetName}' not found in release.", GoldbergAssetName);
                     return false;
                 }
 
