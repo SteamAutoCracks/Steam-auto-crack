@@ -107,6 +107,13 @@ namespace Steamless.API.Model
             return false;
         }
 
+        // Sibling-aware entry point: passes the full plugin list so dispatch logic can consider other plugins.
+        public virtual bool ProcessFile(string file, SteamlessOptions options, System.Collections.Generic.IEnumerable<SteamlessPlugin> siblings)
+        {
+            return this.ProcessFile(file, options);
+        }
+
+
         /// <summary>
         /// Returns a string that represents the current object.
         /// </summary>

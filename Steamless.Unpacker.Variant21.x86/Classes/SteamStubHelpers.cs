@@ -30,7 +30,8 @@ namespace Steamless.Unpacker.Variant21.x86.Classes
     public static class SteamStubHelpers
     {
         /// <summary>
-        /// Xor decrypts the given data starting with the given key, if any.
+        /// Xor decrypts the given data using a rolling key; the key is replaced
+        /// by the previous plaintext word for the next block.
         /// 
         /// @note    If no key is given (0) then the first key is read from the first
         ///          4 bytes inside of the data given.
@@ -41,7 +42,7 @@ namespace Steamless.Unpacker.Variant21.x86.Classes
         /// <returns></returns>
         public static uint SteamXor(ref byte[] data, uint size, uint key = 0)
         {
-            var offset = (uint)0;
+            uint offset = 0;
 
             // Read the first key as the base xor key if we had none given..
             if (key == 0)
@@ -102,13 +103,13 @@ namespace Steamless.Unpacker.Variant21.x86.Classes
         {
             var v1 = (uint)0x55555555;
             var v2 = (uint)0x55555555;
+            var res = new uint[2];
 
             for (var x = 0; x < size; x += 8)
             {
                 var d1 = BitConverter.ToUInt32(data, x + 0);
                 var d2 = BitConverter.ToUInt32(data, x + 4);
 
-                var res = new uint[2];
                 SteamDrmpDecryptPass2(ref res, keys, d1, d2);
 
                 Array.Copy(BitConverter.GetBytes(res[0] ^ v1), 0, data, x + 0, 4);

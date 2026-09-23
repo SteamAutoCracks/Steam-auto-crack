@@ -1,4 +1,6 @@
-﻿/**
+﻿#nullable disable
+
+/**
  * Steamless - Copyright (c) 2015 - 2024 atom0s [atom0s@live.com]
  *
  * This work is licensed under the Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License.
@@ -23,18 +25,21 @@
  * No warranties are given.
  */
 
-using System.Reflection;
-using System.Runtime.InteropServices;
+namespace Steamless.Unpacker.Variant21.x86.Classes
+{
+    /// <summary>
+    /// Common properties shared by all SteamStub 32-bit Variant 2.1 header sizes (standard and D0 variant).
+    /// </summary>
+    public interface ISteamStub32Var21Header
+    {
+        uint PayloadDataVirtualAddress { get; }
 
-[assembly: AssemblyTitle("Steamless.Unpacker.Variant31.x64")]
-[assembly: AssemblyDescription("Steamless SteamStub Variant v3.1 (x64) Unpacker")]
-[assembly: AssemblyConfiguration("Release")]
-[assembly: AssemblyCompany("atom0s")]
-[assembly: AssemblyProduct("Steamless.Unpacker.Variant31.x64")]
-[assembly: AssemblyCopyright("Copyright © atom0s 2015 - 2023")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-[assembly: ComVisible(false)]
-[assembly: Guid("05f540fb-d14b-4966-8de2-591b76361cf0")]
-[assembly: AssemblyVersion("1.0.0.3")]
-[assembly: AssemblyFileVersion("1.0.0.3")]
+        uint PayloadDataSize { get; }
+
+        uint SteamDRMPDllVirtualAddress { get; }
+
+        uint SteamDRMPDllSize { get; }
+
+        uint XTeaKeys { get; }
+    }
+}

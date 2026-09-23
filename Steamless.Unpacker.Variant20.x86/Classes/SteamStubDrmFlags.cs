@@ -36,29 +36,27 @@ namespace Steamless.Unpacker.Variant20.x86.Classes
         None = 0x00,
 
         /// <summary>
-        /// Flag that states that the stub will hash check the stub code and header data.
+        /// The stub will hash check the stub code and header data.
         /// </summary>
         UseValidation = 0x01,
 
         /// <summary>
-        /// Flag that states that the stub will validate the file via WinVerifyTrust if able.
+        /// The stub will validate the file via WinVerifyTrust if able.
         /// </summary>
         UseWinVerifyTrustValidation = 0x02,
 
         /// <summary>
-        /// Flag that states that the stub will decode/decrypt the code section.
+        /// The stub will decode/decrypt the code section.
         /// </summary>
         UseEncodedCodeSection = 0x04,
 
         /// <summary>
-        /// Flag that states that the stub will check for active thread count of the current process during the stubs processing
-        /// to check for any injected threads. (If the count is not 1, the check fails.)
+        /// The stub checks the active thread count during processing to detect injected threads. (If the count is not 1, the check fails.)
         /// </summary>
         UseThreadCheckValidation = 0x08,
 
         /// <summary>
-        /// Flag that states that the stub will create and check some data against a mapped memory view of the modded startup information.
-        /// 
+        /// The stub checks data against a mapped memory view of the modded startup information.
         /// This uses the SteamAppID and Unknown0000 of the header.
         /// </summary>
         UseMemoryMappedValidation = 0x10

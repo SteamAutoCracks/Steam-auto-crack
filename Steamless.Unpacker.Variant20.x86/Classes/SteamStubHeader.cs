@@ -34,30 +34,37 @@ namespace Steamless.Unpacker.Variant20.x86.Classes
     /// Size: 856 bytes
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct SteamStub32Var20_856_Header
+    public struct SteamStub32Var20_856_Header : ISteamStub32Var20Header
     {
         public uint XorKey1;                   // Xor key used to encode the header data.
         public uint XorKey2;                   // Xor key used to encode the header data.
         public uint GetModuleHandleA_idata;    // The address of GetModuleHandleA inside of the .idata section.
         public uint GetProcAddress_idata;      // The address of GetProcAddress inside of the .idata section.
         public uint GetModuleHandleW_idata;    // The address of GetModuleHandleW inside of the .idata section.
-        public uint Flags;                     // Protection flags used with the file.
-        public uint Unknown0000;               // Unknown (Used as part of a hash check when (Flags & 0x10) is set.)
+        public uint Flags;                     // Protection flags used with the file (see DrmFlags).
+        public uint Unknown0000;               // Used as part of a hash check when (Flags & 0x10) is set.
         public uint BindSectionVirtualAddress; // The virtual address to the .bind section.
         public uint BindSectionCodeSize;       // The size of the code stub inside of the .bind section.
-        public uint BindSectionHash;           // Hash that is calculated based on the .bind code section and .bind stub header data. (Only used if (Flags & 1) is set.)
+        public uint BindSectionHash;           // Hash of the .bind code and stub header data. (Only used if (Flags & 1) is set.)
         public uint OEP;                       // The original file OEP to be invoked after the stub has finished.
         public uint CodeSectionVirtualAddress; // The virtual address to the code section. (.text)
         public uint CodeSectionSize;           // The size of the code section.
-        public uint CodeSectionXorKey;         // The starting key to xor decode against. (Only used if (Flags & 4) is set.)
+        public uint CodeSectionXorKey;         // Starting key to xor decode against. (Only used if (Flags & 4) is set.)
         public uint SteamAppId;                // The steam application id of the packed file.
 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x08)]
         public byte[] SteamAppIDString; // The SteamAppID of the packed file, in string format.
 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x314)]
-        public byte[] StubData; // Misc stub data, such as strings, error messages, etc.
+        public byte[] StubData;                 // Misc stub data: strings, error messages, etc.
+
+        uint ISteamStub32Var20Header.Flags => Flags;
+        uint ISteamStub32Var20Header.OEP => OEP;
+        uint ISteamStub32Var20Header.CodeSectionVirtualAddress => CodeSectionVirtualAddress;
+        uint ISteamStub32Var20Header.CodeSectionSize => CodeSectionSize;
+        uint ISteamStub32Var20Header.CodeSectionXorKey => CodeSectionXorKey;
     }
+
 
     /// <summary>
     /// SteamStub DRM Variant 2.0 Header
@@ -65,7 +72,7 @@ namespace Steamless.Unpacker.Variant20.x86.Classes
     /// Size: 884 bytes
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct SteamStub32Var20_884_Header
+    public struct SteamStub32Var20_884_Header : ISteamStub32Var20Header
     {
         public uint XorKey1;                   // Xor key used to encode the header data.
         public uint XorKey2;                   // Xor key used to encode the header data.
@@ -73,22 +80,28 @@ namespace Steamless.Unpacker.Variant20.x86.Classes
         public uint GetProcAddress_idata;      // The address of GetProcAddress inside of the .idata section.
         public uint LoadLibraryA_idata;        // The address of LoadLibraryA inside of the .idata section.
         public uint GetProcAddress_custom;     // The address of the custom GetProcAddress implementation function.
-        public uint Flags;                     // Protection flags used with the file.
-        public uint Unknown0000;               // Unknown (Used as part of a hash check when (Flags & 0x10) is set.)
+        public uint Flags;                     // Protection flags used with the file (see DrmFlags).
+        public uint Unknown0000;               // Used as part of a hash check when (Flags & 0x10) is set.
         public uint BindSectionVirtualAddress; // The virtual address to the .bind section.
         public uint BindSectionCodeSize;       // The size of the code stub inside of the .bind section.
-        public uint BindSectionHash;           // Hash that is calculated based on the .bind code section and .bind stub header data. (Only used if (Flags & 1) is set.)
+        public uint BindSectionHash;           // Hash of the .bind code and stub header data. (Only used if (Flags & 1) is set.)
         public uint OEP;                       // The original file OEP to be invoked after the stub has finished.
         public uint CodeSectionVirtualAddress; // The virtual address to the code section. (.text)
         public uint CodeSectionSize;           // The size of the code section.
-        public uint CodeSectionXorKey;         // The starting key to xor decode against. (Only used if (Flags & 4) is set.)
+        public uint CodeSectionXorKey;         // Starting key to xor decode against. (Only used if (Flags & 4) is set.)
         public uint SteamAppId;                // The steam application id of the packed file.
 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x08)]
         public byte[] SteamAppIDString; // The SteamAppID of the packed file, in string format.
 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x32C)]
-        public byte[] StubData; // Misc stub data, such as strings, error messages, etc.
+        public byte[] StubData;                 // Misc stub data: strings, error messages, etc.
+
+        uint ISteamStub32Var20Header.Flags => Flags;
+        uint ISteamStub32Var20Header.OEP => OEP;
+        uint ISteamStub32Var20Header.CodeSectionVirtualAddress => CodeSectionVirtualAddress;
+        uint ISteamStub32Var20Header.CodeSectionSize => CodeSectionSize;
+        uint ISteamStub32Var20Header.CodeSectionXorKey => CodeSectionXorKey;
     }
 
     /// <summary>
@@ -97,7 +110,7 @@ namespace Steamless.Unpacker.Variant20.x86.Classes
     /// Size: 952 bytes
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public struct SteamStub32Var20_952_Header
+    public struct SteamStub32Var20_952_Header : ISteamStub32Var20Header
     {
         public uint XorKey1;                    // Xor key used to encode the header data.
         public uint XorKey2;                    // Xor key used to encode the header data.
@@ -105,21 +118,27 @@ namespace Steamless.Unpacker.Variant20.x86.Classes
         public uint GetProcAddress_idata;       // The address of GetProcAddress inside of the .idata section.
         public uint GetModuleHandleW_idata;     // The address of GetModuleHandleW inside of the .idata section.
         public uint GetProcAddress_bind;        // The address of the .bind sections custom GetProcAddress instance.
-        public uint Flags;                      // Protection flags used with the file.
-        public uint Unknown0000;                // Unknown (Used as part of a hash check when (Flags & 0x10) is set.)
+        public uint Flags;                      // Protection flags used with the file (see DrmFlags).
+        public uint Unknown0000;                // Used as part of a hash check when (Flags & 0x10) is set.
         public uint BindSectionVirtualAddress;  // The virtual address to the .bind section.
         public uint BindSectionCodeSize;        // The size of the code stub inside of the .bind section.
-        public uint BindSectionHash;            // Hash that is calculated based on the .bind code section and .bind stub header data. (Only used if (Flags & 1) is set.)
+        public uint BindSectionHash;            // Hash of the .bind code and stub header data. (Only used if (Flags & 1) is set.)
         public uint OEP;                        // The original file OEP to be invoked after the stub has finished.
-        public uint CodeSectionVirtualAddress;  // The virtual address to the code section. (.text) (Was 0x0401000 when testing. Possibly original OEP?)
+        public uint CodeSectionVirtualAddress;  // Was 0x0401000 when testing. Possibly original OEP?
         public uint CodeSectionSize;            // The size of the code section.
-        public uint CodeSectionXorKey;          // The starting key to xor decode against. (Only used if (Flags & 4) is set.)
+        public uint CodeSectionXorKey;          // Starting key to xor decode against. (Only used if (Flags & 4) is set.)
         public uint SteamAppID;                 // The steam application id of the packed file.
 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x0C)]
         public byte[] SteamAppIDString;         // The SteamAppID of the packed file, in string format.
 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x36C)]
-        public byte[] StubData;                 // Misc stub data, such as strings, error messages, etc.
+        public byte[] StubData;                 // Misc stub data: strings, error messages, etc.
+
+        uint ISteamStub32Var20Header.Flags => Flags;
+        uint ISteamStub32Var20Header.OEP => OEP;
+        uint ISteamStub32Var20Header.CodeSectionVirtualAddress => CodeSectionVirtualAddress;
+        uint ISteamStub32Var20Header.CodeSectionSize => CodeSectionSize;
+        uint ISteamStub32Var20Header.CodeSectionXorKey => CodeSectionXorKey;
     }
 }

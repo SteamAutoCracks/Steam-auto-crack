@@ -2,7 +2,9 @@
   <PropertyGroup>
     <TargetFramework>net10.0-windows</TargetFramework>
     <OutputType>Library</OutputType>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <RootNamespace>Steamless.Unpacker.Variant31.x64</RootNamespace>
+    <AssemblyName>Steamless.Unpacker.Variant31.x64</AssemblyName>
+    <Description>Steamless SteamStub Variant v3.1 (x64) Unpacker</Description>
     <Platforms>x86</Platforms>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
@@ -11,11 +13,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <OutputPath>..\Steamless\bin\x86\Release\Plugins\</OutputPath>
   </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\Steamless.API\Steamless.API.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="System.IO.Packaging" Version="10.0.10" />
-    <PackageReference Include="System.Security.Cryptography.Xml" Version="10.0.10" />
   </ItemGroup>
 </Project>

@@ -45,7 +45,7 @@ namespace Steamless.API.Crypto
         /// <summary>
         /// Internal AES crypto provider.
         /// </summary>
-        private Aes m_AesCryptoProvider = Aes.Create();
+        private Aes m_AesCryptoProvider;
 
         /// <summary>
         /// Default Constructor
@@ -113,7 +113,7 @@ namespace Steamless.API.Crypto
                     return decryptor.TransformBlock(iv, 0, iv.Length, this.m_OriginalIv, 0) > 0;
                 }
             }
-            catch
+            catch (Exception)
             {
                 return false;
             }
@@ -150,12 +150,14 @@ namespace Steamless.API.Crypto
                 // Decrypt the data..
                 var totalBuffer = new List<byte>();
                 var buffer = new byte[16];
-                while ((cStream.Read(buffer, 0, 16)) > 0)
-                    totalBuffer.AddRange(buffer);
+                int read;
+                // Read can return fewer than 16 bytes; append only the bytes actually read.
+                while ((read = cStream.Read(buffer, 0, 16)) > 0)
+                    totalBuffer.AddRange(buffer.AsSpan(0, read));
 
                 return totalBuffer.ToArray();
             }
-            catch
+            catch (Exception)
             {
                 return null;
             }

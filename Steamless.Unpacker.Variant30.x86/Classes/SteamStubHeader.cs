@@ -37,7 +37,7 @@ namespace Steamless.Unpacker.Variant30.x86.Classes
         public uint Signature; // 0xC0DEC0DE signature to validate this header is proper.
         public ulong ImageBase; // The base of the image that is protected.
         public uint AddressOfEntryPoint; // The entry point that is set from the DRM.
-        public uint BindSectionOffset; // The starting offset to the bind section data. RVA(AddressOfEntryPoint - BindSectionOffset)
+        public uint BindSectionOffset; // Offset relative to AddressOfEntryPoint, e.g. RVA(AddressOfEntryPoint - BindSectionOffset).
         public uint Unknown0000; // [Cyanic: This field is most likely the .bind code size.]
         public uint OriginalEntryPoint; // The original entry point of the binary before it was protected.
         public uint Unknown0001; // [Cyanic: This field is most likely an offset to a string table.]
@@ -58,10 +58,10 @@ namespace Steamless.Unpacker.Variant30.x86.Classes
         public byte[] AES_IV; // The AES encryption IV.
 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x10)]
-        public byte[] CodeSectionStolenData; // The first 16 bytes of the code section stolen.
+        public byte[] CodeSectionStolenData; // The first 16 bytes of the code section, moved here before encryption.
 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x04)]
-        public uint[] EncryptionKeys; // Encryption keys used for decrypting SteamDRMP.dll file.
+        public uint[] EncryptionKeys; // XTEA keys used for decrypting the SteamDRMP.dll file.
 
         public uint Unknown0003; // [Cyanic: This field is most likely used to flag if the file has Tls data or not.]
         public uint Unknown0004;

@@ -29,6 +29,7 @@ namespace Steamless.API.PE64
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using System.Runtime.CompilerServices;
     using System.Runtime.InteropServices;
 
     /// <summary>
@@ -82,7 +83,7 @@ namespace Steamless.API.PE64
             this.FileData = File.ReadAllBytes(this.FilePath);
 
             // Ensure we have valid data by the overall length..
-            if (this.FileData.Length < (Marshal.SizeOf(typeof(NativeApi64.ImageDosHeader64)) + Marshal.SizeOf(typeof(NativeApi64.ImageNtHeaders64))))
+            if (this.FileData.Length < (Marshal.SizeOf<NativeApi64.ImageDosHeader64>() + Unsafe.SizeOf<NativeApi64.ImageNtHeaders64>()))
                 return false;
 
             // Read the file DOS header..
@@ -95,11 +96,14 @@ namespace Steamless.API.PE64
             if (!this.NtHeaders.IsValid)
                 return false;
 
-            // Read and store the dos header if it exists..
-            this.DosStubSize = (uint)(this.DosHeader.e_lfanew - Marshal.SizeOf(typeof(NativeApi64.ImageDosHeader64)));
+            // Guard against an e_lfanew smaller than the DOS header, which would underflow the stub size.
+            if (this.DosHeader.e_lfanew < Marshal.SizeOf<NativeApi64.ImageDosHeader64>())
+                return false;
+
+            this.DosStubSize = (ulong)(this.DosHeader.e_lfanew - Marshal.SizeOf<NativeApi64.ImageDosHeader64>());
             if (this.DosStubSize > 0)
             {
-                this.DosStubOffset = (uint)Marshal.SizeOf(typeof(NativeApi64.ImageDosHeader64));
+                this.DosStubOffset = (ulong)Marshal.SizeOf<NativeApi64.ImageDosHeader64>();
                 this.DosStubData = new byte[this.DosStubSize];
                 Array.Copy(this.FileData, (int)this.DosStubOffset, this.DosStubData, 0, (int)this.DosStubSize);
             }
@@ -110,7 +114,10 @@ namespace Steamless.API.PE64
                 var section = Pe64Helpers.GetSection(this.FileData, x, this.DosHeader, this.NtHeaders);
                 this.Sections.Add(section);
 
-                // Get the sections data..
+                // Reject sections whose raw data extends past the end of the file (corrupt headers).
+                if ((ulong)section.PointerToRawData + section.SizeOfRawData > (ulong)this.FileData.Length)
+                    return false;
+
                 var sectionData = new byte[this.GetAlignment(section.SizeOfRawData, this.NtHeaders.OptionalHeader.FileAlignment)];
                 Array.Copy(this.FileData, section.PointerToRawData, sectionData, 0, section.SizeOfRawData);
                 this.SectionData.Add(sectionData);
@@ -127,7 +134,7 @@ namespace Steamless.API.PE64
                     Array.Copy(this.FileData, fileSize, this.OverlayData, 0, this.FileData.Length - fileSize);
                 }
             }
-            catch
+            catch (Exception)
             {
                 return false;
             }
@@ -149,9 +156,9 @@ namespace Steamless.API.PE64
                 addr = this.GetRvaFromVa(this.TlsDirectory.AddressOfCallBacks);
                 addr = this.GetFileOffsetFromRva(addr);
 
-                // Loop until we hit a null pointer..
+                // Callbacks are a null-terminated list; the count bound guards against corrupt addresses.
                 var count = 0;
-                while (true)
+                while (count < 128 && (ulong)addr + ((ulong)count * 8) + 8 <= (ulong)this.FileData.Length)
                 {
                     var callback = BitConverter.ToUInt64(this.FileData, (int)addr + (count * 8));
                     if (callback == 0)
@@ -241,7 +248,7 @@ namespace Steamless.API.PE64
         /// <returns></returns>
         public byte[] GetSectionData(int index)
         {
-            if (index < 0 || index > this.Sections.Count)
+            if (index < 0 || index >= this.Sections.Count)
                 return null;
 
             return this.SectionData[index];

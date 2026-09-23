@@ -105,13 +105,9 @@ namespace Steamless.Unpacker.Variant10.x86
                 var bind = f.GetSectionData(".bind");
 
                 // Attempt to locate the known v1.x signature..
-                var variant = Pe32Helpers.FindPattern(bind, "60 81 EC 00 10 00 00 BE ?? ?? ?? ?? B9 6A");
-                if (variant == -1)
-                    return false;
-
-                return true;
+                return Pe32Helpers.FindPattern(bind, "60 81 EC 00 10 00 00 BE ?? ?? ?? ?? B9 6A") != -1;
             }
-            catch
+            catch (Exception)
             {
                 return false;
             }
@@ -180,23 +176,27 @@ namespace Steamless.Unpacker.Variant10.x86
 
             // Read the needed header information..
             var headerPointer = BitConverter.ToUInt32(bind, (int)offset + 8);
-            var headerSize = BitConverter.ToUInt32(bind, (int)offset + 13) * 4;
+            var headerSizeRaw = BitConverter.ToUInt32(bind, (int)offset + 13);
+            if (headerSizeRaw > 0x3FFFFFFF)
+                return false;
 
             // Calculate the file offset from the pointer..
+            var headerSize = headerSizeRaw * 4;
+
             var fileOffset = this.File.GetFileOffsetFromRva(headerPointer - this.File.NtHeaders.OptionalHeader.ImageBase);
 
             // Read the header data..
             var headerData = new byte[headerSize];
             Array.Copy(this.File.FileData, fileOffset, headerData, 0, headerSize);
 
-            // Decrypt the header data..
+            // The v1.0 header is obfuscated by XOR-ing each byte with the square of its index.
             for (var x = 0; x < headerSize; x++)
                 headerData[x] ^= (byte)(x * x);
 
             // Store the header and validate it..
             this.StubHeader = Pe32Helpers.GetStructure<SteamStub32Var10Header>(headerData);
 
-            // Validate the header via the unpacker function matching the file entry point..
+            // Validates the header: the unpacker function must resolve to the file's entry point.
             if (this.StubHeader.BindFunction - this.File.NtHeaders.OptionalHeader.ImageBase != this.File.NtHeaders.OptionalHeader.AddressOfEntryPoint)
                 return false;
 
@@ -220,7 +220,16 @@ namespace Steamless.Unpacker.Variant10.x86
         /// <returns></returns>
         private bool Step2()
         {
-            // Remove the bind section if its not requested to be saved..
+            // Stash the .bind bounds first; they are needed later to repair pointers into the removed section.
+            {
+                var bindSection = this.File.GetSection(".bind");
+                if (bindSection.IsValid)
+                {
+                    this.BindSectionRva = bindSection.VirtualAddress;
+                    this.BindSectionSize = bindSection.VirtualSize;
+                }
+            }
+
             if (!this.Options.KeepBindSection)
             {
                 // Obtain the .bind section..
@@ -278,6 +287,42 @@ namespace Steamless.Unpacker.Variant10.x86
                 var ntHeaders = this.File.NtHeaders;
                 ntHeaders.OptionalHeader.AddressOfEntryPoint = this.OriginalEntryPoint;
                 ntHeaders.OptionalHeader.CheckSum = 0;
+
+                // If the import table lived in the removed .bind section, repoint it to the real descriptor in .rdata.
+                if (!this.Options.KeepBindSection && this.BindSectionSize > 0)
+                {
+                    var importTable = ntHeaders.OptionalHeader.ImportTable;
+                    if (importTable.VirtualAddress >= this.BindSectionRva && importTable.VirtualAddress < this.BindSectionRva + this.BindSectionSize)
+                    {
+                        var rdataSection = this.File.GetSection(".rdata");
+                        if (rdataSection.IsValid)
+                        {
+                            var rdataData = this.File.GetSectionData(".rdata");
+                            var importRva = Pe32Helpers.FindImportDescriptorInRdata(rdataData, rdataSection.VirtualAddress);
+                            if (importRva > 0)
+                            {
+                                importTable.VirtualAddress = importRva;
+                                ntHeaders.OptionalHeader.ImportTable = importTable;
+                                this.Log($" --> Fixed import table pointer to RVA 0x{importRva:X8}", LogMessageType.Debug);
+                            }
+                        }
+                    }
+                }
+
+                // Repoint the certificate table to the new overlay start; its offset shifts when .bind is removed.
+                if (!this.Options.KeepBindSection && this.BindSectionSize > 0)
+                {
+                    var certTable = ntHeaders.OptionalHeader.CertificateTable;
+                    if (certTable.VirtualAddress > 0 && certTable.Size > 0)
+                    {
+                        var lastSectionRaw = this.File.Sections[this.File.Sections.Count - 1];
+                        var overlayStart = lastSectionRaw.PointerToRawData + lastSectionRaw.SizeOfRawData;
+                        certTable.VirtualAddress = overlayStart;
+                        ntHeaders.OptionalHeader.CertificateTable = certTable;
+                        this.Log($" --> Fixed certificate table pointer to file offset 0x{overlayStart:X8}", LogMessageType.Debug);
+                    }
+                }
+
                 this.File.NtHeaders = ntHeaders;
 
                 // Write the NT headers to the file..
@@ -315,7 +360,7 @@ namespace Steamless.Unpacker.Variant10.x86
 
                 return true;
             }
-            catch
+            catch (Exception)
             {
                 this.Log(" --> Error trying to save unpacked file!", LogMessageType.Error);
                 return false;
@@ -343,7 +388,6 @@ namespace Steamless.Unpacker.Variant10.x86
 
             this.Log(" --> Unpacked file updated with new checksum!", LogMessageType.Success);
             return true;
-
         }
 
         /// <summary>
@@ -365,5 +409,9 @@ namespace Steamless.Unpacker.Variant10.x86
         /// Gets or sets the true entry point take from the bind unpacker function.
         /// </summary>
         private uint OriginalEntryPoint { get; set; }
+
+        private uint BindSectionRva { get; set; }
+
+        private uint BindSectionSize { get; set; }
     }
 }

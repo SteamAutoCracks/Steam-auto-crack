@@ -34,10 +34,10 @@ namespace Steamless.Unpacker.Variant31.x64.Classes
     public struct SteamStub64Var31Header
     {
         public uint XorKey; // The base xor key, if defined, to unpack the file with.
-        public uint Signature; // The signature to ensure the xor decoding was successful.
+        public uint Signature; // 0xC0DEC0DF signature; validates the xor decoding was successful.
         public ulong ImageBase; // The base of the image that was protected.
         public ulong AddressOfEntryPoint; // The entry point that is set from the DRM.
-        public uint BindSectionOffset; // The starting offset to the .bind section data. RVA(AddressOfEntryPoint - BindSectionOffset)
+        public uint BindSectionOffset; // Offset relative to AddressOfEntryPoint, e.g. RVA(AddressOfEntryPoint - BindSectionOffset).
         public uint Unknown0000; // [Cyanic: This field is most likely the .bind code size.]
         public ulong OriginalEntryPoint; // The original entry point of the binary before it was protected.
         public uint Unknown0001; // [Cyanic: This field is most likely an offset to a string table.]
@@ -58,10 +58,10 @@ namespace Steamless.Unpacker.Variant31.x64.Classes
         public byte[] AES_IV; // The AES encryption IV.
 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x10)]
-        public byte[] CodeSectionStolenData; // The first 16 bytes of the code section stolen.
+        public byte[] CodeSectionStolenData; // The first 16 bytes of the code section, moved here before encryption.
 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x04)]
-        public uint[] EncryptionKeys; // Encryption keys used to decrypt the SteamDrmp.dll file.
+        public uint[] EncryptionKeys; // XTEA keys used for decrypting the SteamDRMP.dll file.
 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x08)]
         public uint[] Unknown0003; // Unknown unused data.

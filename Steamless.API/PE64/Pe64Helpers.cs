@@ -29,10 +29,14 @@ namespace Steamless.API.PE64
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using System.Runtime.CompilerServices;
     using System.Runtime.InteropServices;
 
     public class Pe64Helpers
     {
+        private static readonly long OptionalHeaderFieldOffset = Marshal.OffsetOf(typeof(NativeApi64.ImageNtHeaders64), "OptionalHeader").ToInt64();
+        private static readonly int CheckSumFieldOffset = Marshal.OffsetOf(typeof(NativeApi64.ImageOptionalHeader64), "CheckSum").ToInt32();
+
         /// <summary>
         /// Converts a byte array to the given structure type.
         /// </summary>
@@ -40,20 +44,22 @@ namespace Steamless.API.PE64
         /// <param name="data"></param>
         /// <param name="offset"></param>
         /// <returns></returns>
-        public static T GetStructure<T>(byte[] data, int offset = 0)
+        public static T GetStructure<T>(byte[] data, int offset = 0) where T : struct
         {
-            var size = Marshal.SizeOf(typeof(T));
+            var size = Marshal.SizeOf<T>();
+            if (offset + size > data.Length)
+                return default;
+
             var ptr = Marshal.AllocHGlobal(size);
-
-            // Size can land up being bigger than our buffer..
-            if (size > data.Length)
-                size = Math.Min(data.Length, Math.Max(0, size));
-
-            Marshal.Copy(data, offset, ptr, size);
-            var obj = (T)Marshal.PtrToStructure(ptr, typeof(T));
-            Marshal.FreeHGlobal(ptr);
-
-            return obj;
+            try
+            {
+                Marshal.Copy(data, offset, ptr, size);
+                return Marshal.PtrToStructure<T>(ptr);
+            }
+            finally
+            {
+                Marshal.FreeHGlobal(ptr);
+            }
         }
 
         /// <summary>
@@ -62,15 +68,21 @@ namespace Steamless.API.PE64
         /// <typeparam name="T"></typeparam>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public static byte[] GetStructureBytes<T>(T obj)
+        public static byte[] GetStructureBytes<T>(T obj) where T : struct
         {
-            var size = Marshal.SizeOf(obj);
-            var data = new byte[size];
+            var size = Marshal.SizeOf<T>();
             var ptr = Marshal.AllocHGlobal(size);
-            Marshal.StructureToPtr(obj, ptr, true);
-            Marshal.Copy(ptr, data, 0, size);
-            Marshal.FreeHGlobal(ptr);
-            return data;
+            try
+            {
+                Marshal.StructureToPtr(obj, ptr, false);
+                var bytes = new byte[size];
+                Marshal.Copy(ptr, bytes, 0, size);
+                return bytes;
+            }
+            finally
+            {
+                Marshal.FreeHGlobal(ptr);
+            }
         }
 
         /// <summary>
@@ -83,11 +95,35 @@ namespace Steamless.API.PE64
         /// <returns></returns>
         public static NativeApi64.ImageSectionHeader64 GetSection(byte[] rawData, int index, NativeApi64.ImageDosHeader64 dosHeader, NativeApi64.ImageNtHeaders64 ntHeaders)
         {
-            var sectionSize = Marshal.SizeOf(typeof(NativeApi64.ImageSectionHeader64));
-            var optionalHeaderOffset = Marshal.OffsetOf(typeof(NativeApi64.ImageNtHeaders64), "OptionalHeader").ToInt64();
-            var dataOffset = dosHeader.e_lfanew + optionalHeaderOffset + ntHeaders.FileHeader.SizeOfOptionalHeader;
+            var sectionSize = Unsafe.SizeOf<NativeApi64.ImageSectionHeader64>();
+            var dataOffset = dosHeader.e_lfanew + OptionalHeaderFieldOffset + ntHeaders.FileHeader.SizeOfOptionalHeader;
 
             return GetStructure<NativeApi64.ImageSectionHeader64>(rawData, (int)dataOffset + (index * sectionSize));
+        }
+
+        private static uint ComputePeChecksum(byte[] data)
+        {
+            uint checksum = 0;
+
+            for (var i = 0; i < data.Length - 1; i += 2)
+            {
+                var word = (uint)(data[i] | (data[i + 1] << 8));
+                checksum += word;
+                checksum = (checksum & 0xFFFF) + (checksum >> 16);
+            }
+
+            if ((data.Length & 1) != 0)
+            {
+                checksum += (uint)(data[data.Length - 1] << 8);
+                checksum = (checksum & 0xFFFF) + (checksum >> 16);
+            }
+
+            checksum = (checksum & 0xFFFF) + (checksum >> 16);
+            checksum = (checksum & 0xFFFF) + (checksum >> 16);
+
+            checksum += (uint)data.Length;
+
+            return checksum;
         }
 
         /// <summary>
@@ -97,42 +133,30 @@ namespace Steamless.API.PE64
         /// <returns></returns>
         public static bool UpdateFileChecksum(string path)
         {
-            // Obtain the proper checksum for the file..
-            var ret = NativeApi64.MapFileAndCheckSum(path, out uint HeaderSum, out uint Checksum);
-            if (ret != 0)
-                return false;
-
-            FileStream fStream = null;
-            var data = new byte[4];
-
             try
             {
-                // Open the file for reading/writing..
-                fStream = new FileStream(path, FileMode.Open, FileAccess.ReadWrite);
+                var data = File.ReadAllBytes(path);
 
-                // Read the starting offset to the files NT headers..
-                fStream.Position = (int)Marshal.OffsetOf(typeof(NativeApi64.ImageDosHeader64), "e_lfanew");
-                fStream.Read(data, 0, 4);
+                var dosHeader = GetStructure<NativeApi64.ImageDosHeader64>(data, 0);
+                var sigOffset = dosHeader.e_lfanew;
 
-                var offset = BitConverter.ToUInt32(data, 0);
+                var checksumOffset = sigOffset + 4 +
+                    (uint)Unsafe.SizeOf<NativeApi64.ImageFileHeader64>() +
+                    (uint)CheckSumFieldOffset;
 
-                // Move to the files CheckSum position..
-                offset += 4 + (uint)Marshal.SizeOf(typeof(NativeApi64.ImageFileHeader64)) + (uint)Marshal.OffsetOf(typeof(NativeApi64.ImageOptionalHeader64), "CheckSum").ToInt32();
-                fStream.Position = offset;
+                // Zero the existing checksum field per the PE checksum algorithm spec.
+                Buffer.BlockCopy(new byte[4], 0, data, (int)checksumOffset, 4);
 
-                // Overwrite the file checksum..
-                data = BitConverter.GetBytes(Checksum);
-                fStream.Write(data, 0, 4);
+                var checksum = ComputePeChecksum(data);
+                var checksumBytes = BitConverter.GetBytes(checksum);
+                Buffer.BlockCopy(checksumBytes, 0, data, (int)checksumOffset, 4);
 
+                File.WriteAllBytes(path, data);
                 return true;
             }
-            catch
+            catch (Exception)
             {
                 return false;
-            }
-            finally
-            {
-                fStream?.Dispose();
             }
         }
 
@@ -150,32 +174,75 @@ namespace Steamless.API.PE64
         {
             try
             {
-                // Trim the pattern from extra whitespace..
                 var trimPattern = pattern.Replace(" ", "").Trim();
 
-                // Convert the pattern to a byte array..
+                var patternData = new List<byte>();
                 var patternMask = new List<bool>();
-                var patternData = Enumerable.Range(0, trimPattern.Length).Where(x => x % 2 == 0)
-                                            .Select(x =>
-                                            {
-                                                var bt = trimPattern.Substring(x, 2);
-                                                patternMask.Add(!bt.Contains('?'));
-                                                return bt.Contains('?') ? (byte)0 : Convert.ToByte(bt, 16);
-                                            }).ToArray();
-
-                // Scan the given data for our pattern..
-                for (var x = 0; x < data.Length; x++)
+                for (var i = 0; i < trimPattern.Length; i += 2)
                 {
-                    if (!patternData.Where((t, y) => patternMask[y] && t != data[x + y]).Any())
-                        return (uint)x;
+                    var bt = trimPattern.Substring(i, 2);
+                    patternMask.Add(!bt.Contains('?'));
+                    patternData.Add(bt.Contains('?') ? (byte)0 : Convert.ToByte(bt, 16));
+                }
+
+                var pd = patternData.ToArray();
+                var pm = patternMask.ToArray();
+                var lastPossible = data.Length - pd.Length;
+
+                for (var x = 0; x <= lastPossible; x++)
+                {
+                    var found = true;
+                    for (var y = 0; y < pd.Length; y++)
+                    {
+                        if (pm[y] && pd[y] != data[x + y])
+                        {
+                            found = false;
+                            break;
+                        }
+                    }
+                    if (found)
+                        return x;
                 }
 
                 return -1;
             }
-            catch
+            catch (Exception)
             {
                 return -1;
             }
+        }
+
+        public static uint FindImportDescriptorInRdata(byte[] rdataData, uint rdataRva)
+        {
+            for (int offset = 0; offset < rdataData.Length - 20; offset += 4)
+            {
+                var nameRva = BitConverter.ToUInt32(rdataData, offset + 12);
+                if (nameRva < rdataRva || nameRva >= rdataRva + rdataData.Length)
+                    continue;
+
+                var nameFileOff = nameRva - rdataRva;
+                if (nameFileOff >= (uint)rdataData.Length)
+                    continue;
+
+                var dllName = System.Text.Encoding.ASCII.GetString(rdataData, (int)nameFileOff, Math.Min(64, rdataData.Length - (int)nameFileOff));
+                var nullIdx = dllName.IndexOf('\0');
+                if (nullIdx >= 0)
+                    dllName = dllName.Substring(0, nullIdx);
+
+                if (!dllName.EndsWith(".dll", System.StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                var origRva = BitConverter.ToUInt32(rdataData, offset);
+                var iatRva = BitConverter.ToUInt32(rdataData, offset + 16);
+                if (origRva < rdataRva || origRva >= rdataRva + rdataData.Length)
+                    continue;
+                if (iatRva < rdataRva || iatRva >= rdataRva + rdataData.Length)
+                    continue;
+
+                return rdataRva + (uint)offset;
+            }
+
+            return 0;
         }
     }
 }

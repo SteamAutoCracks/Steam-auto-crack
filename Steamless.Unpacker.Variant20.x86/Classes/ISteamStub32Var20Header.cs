@@ -1,4 +1,6 @@
-﻿/**
+﻿#nullable disable
+
+/**
  * Steamless - Copyright (c) 2015 - 2024 atom0s [atom0s@live.com]
  *
  * This work is licensed under the Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License.
@@ -23,18 +25,21 @@
  * No warranties are given.
  */
 
-using System.Reflection;
-using System.Runtime.InteropServices;
+namespace Steamless.Unpacker.Variant20.x86.Classes
+{
+    /// <summary>
+    /// Common properties shared by all SteamStub 32-bit Variant 2.0 header sizes (856, 884, 952).
+    /// </summary>
+    public interface ISteamStub32Var20Header
+    {
+        uint Flags { get; }
 
-[assembly: AssemblyTitle("Steamless.Unpacker.Variant30.x64")]
-[assembly: AssemblyDescription("Steamless SteamStub Variant v3.0 (x64) Unpacker")]
-[assembly: AssemblyConfiguration("Release")]
-[assembly: AssemblyCompany("atom0s")]
-[assembly: AssemblyProduct("Steamless.Unpacker.Variant30.x64")]
-[assembly: AssemblyCopyright("Copyright © atom0s 2015 - 2023")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-[assembly: ComVisible(false)]
-[assembly: Guid("03621ead-77a7-4208-afdf-4b8292230a71")]
-[assembly: AssemblyVersion("1.0.0.3")]
-[assembly: AssemblyFileVersion("1.0.0.3")]
+        uint OEP { get; }
+
+        uint CodeSectionVirtualAddress { get; }
+
+        uint CodeSectionSize { get; }
+
+        uint CodeSectionXorKey { get; }
+    }
+}

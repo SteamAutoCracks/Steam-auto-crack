@@ -30,10 +30,10 @@ namespace Steamless.Unpacker.Variant30.x64.Classes
     public static class SteamStubHelpers
     {
         /// <summary>
-        /// Xor decrypts the given data starting with the given key, if any.
-        /// 
-        /// @note    If no key is given (0) then the first key is read from the first
-        ///          4 bytes inside of the data given.
+        /// Xor decrypts the given data using a rolling key; the key is replaced by
+        /// the previous plaintext word for the next block.
+        /// @note If no key is given (0) then the first key is read from the first
+        ///       4 bytes inside of the data given.
         /// </summary>
         /// <param name="data">The data to xor decode.</param>
         /// <param name="size">The size of the data to decode.</param>
@@ -64,8 +64,7 @@ namespace Steamless.Unpacker.Variant30.x64.Classes
 
         /// <summary>
         /// The second pass of decryption for the SteamDRMP.dll file.
-        /// 
-        /// @note    The encryption method here is known as XTEA.
+        /// @note The encryption method here is known as XTEA.
         /// </summary>
         /// <param name="res">The result value buffer to write our returns to.</param>
         /// <param name="keys">The keys used for the decryption.</param>
@@ -91,9 +90,8 @@ namespace Steamless.Unpacker.Variant30.x64.Classes
 
         /// <summary>
         /// The first pass of the decryption for the SteamDRMP.dll file.
-        /// 
-        /// @note    The encryption method here is known as XTEA. It is modded to include
-        ///          some basic xor'ing.
+        /// @note The encryption method here is known as XTEA. It is modded to include
+        ///       some basic xor'ing.
         /// </summary>
         /// <param name="data">The data to decrypt.</param>
         /// <param name="size">The size of the data to decrypt.</param>
@@ -102,13 +100,13 @@ namespace Steamless.Unpacker.Variant30.x64.Classes
         {
             var v1 = (uint)0x55555555;
             var v2 = (uint)0x55555555;
+            var res = new uint[2];
 
             for (var x = 0; x < size; x += 8)
             {
                 var d1 = BitConverter.ToUInt32(data, x + 0);
                 var d2 = BitConverter.ToUInt32(data, x + 4);
 
-                var res = new uint[2];
                 SteamDrmpDecryptPass2(ref res, keys, d1, d2);
 
                 Array.Copy(BitConverter.GetBytes(res[0] ^ v1), 0, data, x + 0, 4);
